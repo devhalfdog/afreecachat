@@ -1,7 +1,9 @@
-# AfreecaTV Chat library
+# AfreecaTV chat, Go library
 [아프리카TV](https://afreecatv.com) 채팅을 읽을 수 있는 [Go](https://go.dev) 라이브러리입니다.
 
 공식 API가 없기 때문에 임시로 제작하였고, 언제든지 막히거나 수정될 가능성이 매우 높습니다.
+
+코드에 대한 부분들은 언제든지 이슈에 남겨주시면 감사하겠습니다.
 
 ## 사용 방법
 **라이브러리 가져오기**
