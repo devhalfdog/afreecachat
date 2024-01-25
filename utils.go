@@ -1,0 +1,171 @@
+package afreecachat
+
+import (
+	"fmt"
+	"strconv"
+	"strings"
+)
+
+// DefaultLog 함수는 채팅 서버 연결에 필요한
+// Handshake 데이터 중 미리 초기화된 Log 데이터를
+// 반환한다.
+func DefaultLog() Log {
+	return Log{
+		SetBps:          "6000",
+		ViewBps:         "6000",
+		Quality:         "ori",
+		GeoContryCode:   "KR",
+		GeoRegionCode:   "49",
+		AcceptLanguage:  "ko_KR",
+		ServiceLanguage: "ko_KR",
+		JoinContryCode:  "410",
+		Subscribe:       "1",
+	}
+}
+
+// DefaultInfo 함수는 채팅 서버 연결에 필요한
+// Handshake 데이터 중 미리 초기화된 Info 데이터를
+// 반환한다.
+func DefaultInfo() Info {
+	return Info{
+		Password:     "",
+		AuthInfo:     "NULL",
+		PVer:         "2",
+		AccessSystem: "html5",
+	}
+}
+
+// makeBuffer 함수는 전달된 데이터를
+// 웹소켓으로 전달할 수 있는 []byte 데이터로 변환한다.
+func makeBuffer(p []string) []byte {
+	var buf []byte
+	for _, e := range p {
+		buf = append(buf, []byte(e)...)
+	}
+
+	return buf
+}
+
+// makeHeader 함수는 전달된 데이터를
+// 웹소켓으로 전달할 수 있는 []byte 데이터로 변환한다.
+func makeHeader(svc int, plen int, option int) []byte {
+	var header []byte
+	header = append(header, 27, 9)
+	header = append(header, []byte(fmt.Sprintf("%04d", svc))...)
+	header = append(header, []byte(fmt.Sprintf("%06d", plen))...)
+	header = append(header, []byte(fmt.Sprintf("%02d", option))...)
+
+	return header
+}
+
+// readInt 함수는 전달된 데이터를
+// int 로 변환한다.
+func readInt(message []byte) int {
+	result := ""
+	for _, b := range message {
+		result += string(b)
+	}
+
+	svc, _ := strconv.Atoi(result)
+	return svc
+}
+
+// getFlag 함수는 전달된 데이터의 값을 이용하여
+// UserFlag 구조체를 초기화하고 반환한다.
+func getFlag(flag int) UserFlag {
+	return UserFlag{
+		Admin:            flag&(1<<0) != 0,
+		Hidden:           flag&(1<<1) != 0,
+		BJ:               flag&(1<<2) != 0,
+		Dumb:             flag&(1<<3) != 0,
+		Guest:            flag&(1<<4) != 0,
+		Fanclub:          flag&(1<<5) != 0,
+		AutoManager:      flag&(1<<6) != 0,
+		ManagerList:      flag&(1<<7) != 0,
+		SubBJ:            flag&(1<<8) != 0,
+		Female:           flag&(1<<9) != 0,
+		AutoDumb:         flag&(1<<10) != 0,
+		DumbBlind:        flag&(1<<11) != 0,
+		PaperingBlind:    flag&(1<<12) != 0,
+		ExitUser:         flag&(1<<13) != 0,
+		Mobile:           flag&(1<<14) != 0,
+		TopFan:           flag&(1<<15) != 0,
+		Realname:         flag&(1<<16) != 0,
+		NoDirect:         flag&(1<<17) != 0,
+		GlobalApp:        flag&(1<<18) != 0,
+		QuickView:        flag&(1<<19) != 0,
+		StickerSupporter: flag&(1<<20) != 0,
+		Chromecast:       flag&(1<<21) != 0,
+		Subscription:     flag&(1<<28) != 0,
+	}
+}
+
+// getServiceCode 메서드는 전달된 데이터의
+// 일부를 검사하여 서비스 코드를 반환한다.
+func getServiceCode(message []byte) int {
+	svcCode := readInt(message[2:6])
+	return svcCode
+}
+
+func parseMultiUserList(msg []string) []UserList {
+	users := make([]UserList, 0)
+
+	for i := 2; i < len(msg); i += 3 {
+		if i+2 >= len(msg) || msg[i] == "-1" {
+			continue
+		}
+
+		flag, _ := strconv.Atoi(strings.Split(msg[i+2], "|")[0])
+
+		user := UserList{
+			User: User{
+				ID:   msg[i],
+				Name: msg[i+1],
+				Flag: getFlag(flag),
+			},
+			Status: true,
+		}
+
+		users = append(users, user)
+	}
+
+	return users
+}
+
+func parseSingleUserList(msg []string) UserList {
+	var status bool
+	var flag int = 0
+
+	switch msg[1] {
+	case "1":
+		status = true
+	case "-1":
+		status = false
+	}
+
+	if status {
+		flag, _ = strconv.Atoi(strings.Split(msg[4], "|")[0])
+	}
+
+	result := UserList{
+		User: User{
+			ID:   removeParentheses(msg[2]),
+			Name: msg[3],
+			Flag: getFlag(flag),
+		},
+		Status: status,
+	}
+
+	return result
+}
+
+// removeParentheses 함수는 문자열에 포함되어 있는
+// () 와 그 안의 있는 내용을 제거하여 반환합니다.
+func removeParentheses(str string) string {
+	idx := strings.Index(str, "(")
+	if idx != -1 {
+		return str[:idx]
+	}
+
+	return str
+}
