@@ -85,8 +85,6 @@ func (c *Client) parseAdballoon(message []byte) Adballoon {
 // 서비스 코드가 91, 93일 때 이 데이터를 이용해
 // Subscription 구조체로 초기화하고 반환한다.
 func (c *Client) parseSubscription(message []byte, svc int) Subscription {
-	// "\x1b\t009100004600\f8632\fmygomiee\fdaegoguryeo(5)\f대풍순대\f15\f" // 신규 구독?
-	// "\x1b\t009300004100\fmygomiee\fangryyouth\f생선가시\f9\f8632\f" // 연속 9개월
 	msg := strings.Split(string(message), "\f")
 	var user User
 	count := 1
@@ -108,9 +106,3 @@ func (c *Client) parseSubscription(message []byte, svc int) Subscription {
 
 	return subscription
 }
-
-//"\x1b\t001800006100\fmygomiee\fwhs741\f준치는준치\f100\f0\f0\f8632\f100\f0\f0\fjunwoo\f" 별풍
-//"\x1b\t001800007200\fmygomiee\fiseung154\f잠없는사람Zz\f10\f516\f0\f8632\f10\f0\f0\fkor_custom05\f"
-
-//"\x1b\t001800007100\fmygomiee\fmandeuk500\f[V]만두님♡\f10\f519\f0\f8632\f10\f0\f0\fkor_custom11\f" 10개 선물
-//"\x1b\t001200006300\f589856|163840\fmandeuk500(2)\f[V]만두님♡\f0\f0\f589824|163840\f // 519번째 팬클럽
