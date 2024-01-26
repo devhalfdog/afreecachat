@@ -39,6 +39,9 @@ func main() {
   - 채팅 채널 연결에 필요한 채팅 채널 값
 - `Flag` (필수)
   - 채팅 채널 연결에 필요한 유저 플래그 값
+- `SocketAddress` (필수)
+  - 채팅 채널 연결에 필요한 채팅 서버 주소 값
+  - `wss://{CH_DOMAIN}:{CH_PORT}/Websocket/{BJ_ID}`
 
 ### Callback
 - `OnConnect(bool)`
