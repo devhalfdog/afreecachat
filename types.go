@@ -7,7 +7,7 @@ type Client struct {
 	Token         Token
 
 	socket *websocket.Conn
-	read   chan string
+	read   chan []byte
 
 	handshake [][]byte
 

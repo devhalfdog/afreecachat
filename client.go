@@ -18,7 +18,7 @@ import (
 func NewClient(token Token) *Client {
 	return &Client{
 		Token:     token,
-		read:      make(chan string, 1024),
+		read:      make(chan []byte, 1024),
 		handshake: make([][]byte, 2),
 	}
 }
@@ -168,7 +168,7 @@ func (c *Client) processSocket() error {
 	go c.reader(&wg)
 	c.pingpong()
 
-	err := c.startParser()
+	err := c.startParser(&wg)
 	if err != nil {
 		return err
 	}
@@ -185,34 +185,37 @@ func (c *Client) reader(wg *sync.WaitGroup) {
 	for {
 		_, msg, err := c.socket.ReadMessage()
 		if err != nil {
-			c.read <- fmt.Sprintf("error: %s", err.Error())
+			c.read <- []byte(fmt.Sprintf("error: %s", err.Error()))
 			return
 		}
 
-		c.read <- string(msg)
+		c.read <- msg
 	}
 }
 
 // startParser 메서드는 Handshake 첫번째 과정을
 // 수행하고, read 필드로 전달된 데이터를
 // 처리하여 콜백 함수로 전달한다.
-func (c *Client) startParser() error {
+func (c *Client) startParser(wg *sync.WaitGroup) error {
 	err := c.setLoginHandshke()
 	if err != nil {
+		wg.Done()
 		return err
 	}
 
 	err = c.setHandshake(1)
 	if err != nil {
+		wg.Done()
 		return err
 	}
 
 	for msg := range c.read {
-		if strings.HasPrefix(msg, "error: ") {
-			return errors.New(msg)
+		if strings.HasPrefix(string(msg), "error: ") {
+			wg.Done()
+			return errors.New(string(msg))
 		}
 
-		svc := getServiceCode([]byte(msg))
+		svc := getServiceCode(msg)
 		switch svc {
 		case 1: // Login, need JOIN handshake
 			err = c.setJoinHandshake()
@@ -225,27 +228,27 @@ func (c *Client) startParser() error {
 				return err
 			}
 		case 4: // 입장/퇴장
-			m := c.parseUserJoin([]byte(msg))
+			m := c.parseUserJoin(msg)
 			if c.onUserLists != nil {
 				c.onUserLists(m)
 			}
 		case 5: // Chat
-			m := c.parseChatMessage([]byte(msg))
+			m := c.parseChatMessage(msg)
 			if c.onChatMessage != nil {
 				c.onChatMessage(m)
 			}
 		case 18: // 별풍선
-			m := c.parseBalloon([]byte(msg))
+			m := c.parseBalloon(msg)
 			if c.onBalloon != nil {
 				c.onBalloon(m)
 			}
 		case 87: // 애드벌룬
-			m := c.parseAdballoon([]byte(msg))
+			m := c.parseAdballoon(msg)
 			if c.onAdballoon != nil {
 				c.onAdballoon(m)
 			}
 		case 91, 93: // 신규 구독 / 연속 구독
-			m := c.parseSubscription([]byte(msg), svc)
+			m := c.parseSubscription(msg, svc)
 			if c.onSubscription != nil {
 				c.onSubscription(m)
 			}
