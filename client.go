@@ -1,7 +1,6 @@
 package afreecachat
 
 import (
-	"encoding/hex"
 	"errors"
 	"fmt"
 	"net/http"
@@ -252,24 +251,33 @@ func (c *Client) startParser(wg *sync.WaitGroup) error {
 			if c.onSubscription != nil {
 				c.onSubscription(m)
 			}
-
-			// case 109: // OGQ 이모티콘
-			// case 12: // 플래그 변경 (ex, 열혈달았을 때)
 		}
 	}
 
 	return nil
 }
 
+// SendChatMessage 메서드는 채팅 채널에 채팅 데이터를 전송한다.
+func (c *Client) SendChatMessage(message string) error {
+	var tBuf []string
+	tBuf = append(tBuf, "\f", message, "\f", "0", "\f")
+	bodyBuf := makeBuffer(tBuf)
+	headerBuf := makeHeader(5, len(bodyBuf), 0)
+
+	packet := append(headerBuf, bodyBuf...)
+	return c.socket.WriteMessage(websocket.BinaryMessage, packet)
+}
+
 // pingpong 메서드는 매 1분마다 ping 데이터를
-// 전송한다
+// 전송한다.
 func (c *Client) pingpong() {
 	t := time.NewTicker(1 * time.Minute)
 	go func() {
 		for range t.C {
-			p := "1b093030303030303030303130300c"
-			h, _ := hex.DecodeString(p)
-			c.socket.WriteMessage(websocket.BinaryMessage, h)
+			bodyBuf := makeBuffer([]string{"\f"})
+			headerbuf := makeHeader(0, len(bodyBuf), 0)
+			p := append(headerbuf, bodyBuf...)
+			c.socket.WriteMessage(websocket.BinaryMessage, p)
 		}
 	}()
 }
