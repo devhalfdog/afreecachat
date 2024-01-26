@@ -55,8 +55,8 @@ func (c *Client) setHandshake(svc int) error {
 // setLoginHandshake 메서드는 채팅 서버 연결에
 // 필요한 Login Handshake 과정을 수행한다.
 func (c *Client) setLoginHandshke() error {
-	if c.Token.Flag == "" || c.Token.PdBoxTicket == "" {
-		return errors.New("need token value")
+	if c.Token.Flag == "" {
+		return errors.New("need user flag value")
 	}
 
 	var packet []string
