@@ -8,7 +8,7 @@
 ## 사용 방법
 **라이브러리 가져오기**
 
-`go get https://github.com/devhalfdog/afreecachat`
+`go get -u https://github.com/devhalfdog/afreecachat`
 
 ```go
 ...
