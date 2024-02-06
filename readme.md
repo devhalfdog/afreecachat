@@ -20,7 +20,11 @@ func main() {
         ChatRoom: {ChatRoom},
         Flag: {Flag},
     }
-    client := afreecachat.NewClient(token)
+    client, err := afreecachat.NewClient(token)
+    if err != nil {
+        panic(err)
+    }
+
     client.SocketAddress = {WebSocket Address}
 
     client.OnChatMessage(func(message afreecachat.ChatMessage)) {
@@ -33,9 +37,8 @@ func main() {
 - `PdBoxTicket`
   - 계정 연동에 필요한 `PdBoxTicket` 쿠키 값
   - 입력하지 않을 경우, 비로그인으로 접속합니다.
-- `FanTicket` (필수)
+- `FanTicket`
   - 채팅 채널 연결에 필요한 `FanTicket` 값
-  - example: `{}
 - `ChatRoom` (필수)
   - 채팅 채널 연결에 필요한 채팅 채널 값
   - example: `2132`
