@@ -221,7 +221,6 @@ func (c *Client) startParser(wg *sync.WaitGroup) error {
 	}
 
 	for msg := range c.read {
-		fmt.Printf("%q\n", msg)
 		if strings.HasPrefix(string(msg), "error: ") {
 			wg.Done()
 			return errors.New(string(msg))
