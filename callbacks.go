@@ -9,6 +9,10 @@ func (c *Client) OnConnect(callback func(connect bool)) {
 	c.onConnect = callback
 }
 
+func (c *Client) OnJoinChannel(callback func(join bool)) {
+	c.onJoinChannel = callback
+}
+
 // OnChatMessage 메서드는 채팅 메시지가 왔을 때 데이터를 전달한다.
 func (c *Client) OnChatMessage(callback func(message ChatMessage)) {
 	c.onChatMessage = callback

@@ -5,6 +5,11 @@ import (
 	"strings"
 )
 
+func (c *Client) parseJoinChannel(message []byte) bool {
+	msg := strings.Split(string(message), "\f")
+	return msg[1] != "비밀번호가 틀렸습니다."
+}
+
 // parseUserJoin 메서드는 전달된 데이터의
 // 서비스 코드가 4일 때 이 데이터를 이용해
 // User 구조체로 초기화하고 반환한다.
@@ -32,14 +37,17 @@ func (c *Client) parseUserJoin(message []byte) []UserList {
 func (c *Client) parseChatMessage(message []byte) ChatMessage {
 	msg := strings.Split(string(message), "\f")
 	flags := strings.Split(msg[7], "|")
-	flag, _ := strconv.Atoi(flags[0])
+	userFlag := setFlag(flags)
+	subMonth, _ := strconv.Atoi(msg[8])
+
 	cm := ChatMessage{
 		User: User{
-			ID:   removeParentheses(msg[2]),
-			Name: msg[6],
-			Flag: getFlag(flag),
+			ID:             removeParentheses(strings.TrimSpace(msg[2])),
+			Name:           strings.TrimSpace(msg[6]),
+			SubscribeMonth: subMonth,
+			Flag:           userFlag,
 		},
-		Message: msg[1],
+		Message: strings.TrimSpace(msg[1]),
 	}
 
 	return cm

@@ -11,13 +11,13 @@ import (
 // 반환한다.
 func DefaultLog() Log {
 	return Log{
-		SetBps:          "6000",
-		ViewBps:         "6000",
+		SetBps:          "undefined",
+		ViewBps:         "NaN",
 		Quality:         "ori",
-		GeoContryCode:   "KR",
-		GeoRegionCode:   "49",
-		AcceptLanguage:  "ko_KR",
-		ServiceLanguage: "ko_KR",
+		GeoContryCode:   "undefined",
+		GeoRegionCode:   "undefined",
+		AcceptLanguage:  "undefined",
+		ServiceLanguage: "undefined",
 		JoinContryCode:  "410",
 		Subscribe:       "1",
 	}
@@ -26,12 +26,12 @@ func DefaultLog() Log {
 // DefaultInfo 함수는 채팅 서버 연결에 필요한
 // Handshake 데이터 중 미리 초기화된 Info 데이터를
 // 반환한다.
-func DefaultInfo() Info {
+func DefaultInfo(password string) Info {
 	return Info{
-		Password:     "",
-		AuthInfo:     "NULL",
-		PVer:         "2",
-		AccessSystem: "html5",
+		Password: password,
+		AuthInfo: "undefined",
+		// PVer:         "2",
+		// AccessSystem: "html5",
 	}
 }
 
@@ -70,36 +70,6 @@ func readInt(message []byte) int {
 	return svc
 }
 
-// getFlag 함수는 전달된 데이터의 값을 이용하여
-// UserFlag 구조체를 초기화하고 반환한다.
-func getFlag(flag int) UserFlag {
-	return UserFlag{
-		Admin:            flag&(1<<0) != 0,
-		Hidden:           flag&(1<<1) != 0,
-		BJ:               flag&(1<<2) != 0,
-		Dumb:             flag&(1<<3) != 0,
-		Guest:            flag&(1<<4) != 0,
-		Fanclub:          flag&(1<<5) != 0,
-		AutoManager:      flag&(1<<6) != 0,
-		ManagerList:      flag&(1<<7) != 0,
-		SubBJ:            flag&(1<<8) != 0,
-		Female:           flag&(1<<9) != 0,
-		AutoDumb:         flag&(1<<10) != 0,
-		DumbBlind:        flag&(1<<11) != 0,
-		PaperingBlind:    flag&(1<<12) != 0,
-		ExitUser:         flag&(1<<13) != 0,
-		Mobile:           flag&(1<<14) != 0,
-		TopFan:           flag&(1<<15) != 0,
-		Realname:         flag&(1<<16) != 0,
-		NoDirect:         flag&(1<<17) != 0,
-		GlobalApp:        flag&(1<<18) != 0,
-		QuickView:        flag&(1<<19) != 0,
-		StickerSupporter: flag&(1<<20) != 0,
-		Chromecast:       flag&(1<<21) != 0,
-		Subscription:     flag&(1<<28) != 0,
-	}
-}
-
 // getServiceCode 메서드는 전달된 데이터의
 // 일부를 검사하여 서비스 코드를 반환한다.
 func getServiceCode(message []byte) int {
@@ -114,14 +84,14 @@ func parseMultiUserList(msg []string) []UserList {
 		if i+2 >= len(msg) || msg[i] == "-1" {
 			continue
 		}
-
-		flag, _ := strconv.Atoi(strings.Split(msg[i+2], "|")[0])
+		flags := strings.Split(msg[i+2], "|")
+		userFlag := setFlag(flags)
 
 		user := UserList{
 			User: User{
 				ID:   msg[i],
 				Name: msg[i+1],
-				Flag: getFlag(flag),
+				Flag: userFlag,
 			},
 			Status: true,
 		}
@@ -134,7 +104,7 @@ func parseMultiUserList(msg []string) []UserList {
 
 func parseSingleUserList(msg []string) UserList {
 	var status bool
-	var flag int = 0
+	var userFlag UserFlag
 
 	switch msg[1] {
 	case "1":
@@ -144,14 +114,15 @@ func parseSingleUserList(msg []string) UserList {
 	}
 
 	if status {
-		flag, _ = strconv.Atoi(strings.Split(msg[4], "|")[0])
+		flags := strings.Split(msg[4], "|")
+		userFlag = setFlag(flags)
 	}
 
 	result := UserList{
 		User: User{
 			ID:   removeParentheses(msg[2]),
 			Name: msg[3],
-			Flag: getFlag(flag),
+			Flag: userFlag,
 		},
 		Status: status,
 	}
@@ -168,4 +139,71 @@ func removeParentheses(str string) string {
 	}
 
 	return str
+}
+
+// setFlag 함수는 입력된 flag를 UserFlag로 변환하여
+// 반환합니다.
+func setFlag(flags []string) UserFlag {
+	flag1, _ := strconv.Atoi(flags[0])
+	flag2, _ := strconv.Atoi(flags[1])
+	return UserFlag{
+		Flag1: getFlag1(flag1),
+		Flag2: getFlag2(flag2),
+	}
+}
+
+// getFlag1 함수는 전달된 데이터의 값을 이용하여
+// Flag1 구조체를 초기화하고 반환한다.
+func getFlag1(flag int) Flag1 {
+	return Flag1{
+		Admin:          flag&(1<<0) != 0,
+		Hidden:         flag&(1<<1) != 0,
+		BJ:             flag&(1<<2) != 0,
+		Dumb:           flag&(1<<3) != 0,
+		Guest:          flag&(1<<4) != 0,
+		Fanclub:        flag&(1<<5) != 0,
+		AutoManager:    flag&(1<<6) != 0,
+		ManagerList:    flag&(1<<7) != 0,
+		Manager:        flag&(1<<8) != 0,
+		Female:         flag&(1<<9) != 0,
+		AutoDumb:       flag&(1<<10) != 0,
+		DumbBlind:      flag&(1<<11) != 0,
+		DobaeBlind:     flag&(1<<12) != 0,
+		DobaeBlind2:    flag&(1<<24) != 0,
+		ExitUser:       flag&(1<<13) != 0,
+		Mobile:         flag&(1<<14) != 0,
+		TopFan:         flag&(1<<15) != 0,
+		Realname:       flag&(1<<16) != 0,
+		NoDirect:       flag&(1<<17) != 0,
+		GlobalApp:      flag&(1<<18) != 0,
+		QuickView:      flag&(1<<19) != 0,
+		SptrSticker:    flag&(1<<20) != 0,
+		Chromecast:     flag&(1<<21) != 0,
+		Follower:       flag&(1<<28) != 0,
+		NotiVodBalloon: flag&(1<<30) != 0,
+		NotiTopFan:     flag&(1<<31) != 0,
+	}
+}
+
+// getFlag2 함수는 전달된 데이터의 값을 이용하여
+// Flag2 구조체를 초기화하고 반환한다.
+func getFlag2(flag int) Flag2 {
+	return Flag2{
+		GlobalPC:    flag&(1<<0) != 0,
+		Clan:        flag&(1<<1) != 0,
+		TopClan:     flag&(1<<2) != 0,
+		Top20:       flag&(1<<3) != 0,
+		GameGod:     flag&(1<<4) != 0,
+		ATagAllow:   flag&(1<<5) != 0,
+		NoSuperChat: flag&(1<<6) != 0,
+		NoRecvChat:  flag&(1<<7) != 0,
+		Flash:       flag&(1<<8) != 0,
+		LGGame:      flag&(1<<9) != 0,
+		Employee:    flag&(1<<10) != 0,
+		CleanAti:    flag&(1<<11) != 0,
+		Police:      flag&(1<<12) != 0,
+		AdminChat:   flag&(1<<13) != 0,
+		PC:          flag&(1<<14) != 0,
+		Specify:     flag&(1<<15) != 0,
+	}
 }

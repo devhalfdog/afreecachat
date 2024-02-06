@@ -6,13 +6,15 @@ type Client struct {
 	SocketAddress string // Socket Address
 	Token         Token
 
-	socket *websocket.Conn
-	read   chan []byte
+	channelPassword string
+	socket          *websocket.Conn
+	read            chan []byte
 
 	handshake [][]byte
 
 	// callback
 	onConnect      func(connect bool)
+	onJoinChannel  func(join bool)
 	onChatMessage  func(message ChatMessage)
 	onUserLists    func(userlist []UserList)
 	onAdballoon    func(adballoon Adballoon)
@@ -40,42 +42,70 @@ type Log struct {
 }
 
 type Info struct {
-	Password     string `json:"pwd"`
-	AuthInfo     string `json:"auth_info"`
-	PVer         string `json:"pver"`
-	AccessSystem string `json:"access_system"`
+	Password string `json:"pwd"`
+	AuthInfo string `json:"auth_info"`
+	// PVer     string `json:"pver"`
+	// AccessSystem string `json:"access_system"`
 }
 
 type User struct {
-	ID   string // 유저 아이디
-	Name string // 유저 닉네임
-	Flag UserFlag
+	ID             string // 유저 아이디
+	Name           string // 유저 닉네임
+	SubscribeMonth int    // 구독 개월
+	Flag           UserFlag
 }
 
 type UserFlag struct {
-	Admin            bool // 관리자
-	Hidden           bool // 아이디 숨김
-	BJ               bool // 방장
-	Dumb             bool // 벙어리
-	Guest            bool // 비회원
-	Fanclub          bool // 팬클럽 회원
-	AutoManager      bool // 자동 매니저
-	ManagerList      bool // 자동 매니저 리스트에 등록된 사람
-	SubBJ            bool // 부방장, 매니저
-	Female           bool // 여자, 거짓이면 남자
-	AutoDumb         bool // 자동 벙어리
-	DumbBlind        bool // 벙어리로 인한 블라인드
-	PaperingBlind    bool // 도배로 인한 블라인드
-	ExitUser         bool // 나간 사람
-	Mobile           bool // 모바일 유저
-	TopFan           bool // 열혈팬
-	Realname         bool // 실명인증
-	NoDirect         bool // 1:1 직접 채팅 금지
-	GlobalApp        bool // 글로벌 모바일 앱 사용자
-	QuickView        bool // 퀵 뷰 사용자
-	StickerSupporter bool // 스티커 서포터
-	Chromecast       bool // 크롬 캐스트 사용자
-	Subscription     bool // 구독팬
+	Flag1 Flag1
+	Flag2 Flag2
+}
+
+type Flag1 struct {
+	Admin          bool // 관리자
+	Hidden         bool // 아이디 숨김
+	BJ             bool // 방장
+	Dumb           bool // 벙어리
+	Guest          bool // 비회원
+	Fanclub        bool // 팬클럽
+	AutoManager    bool // 고정 매니저
+	ManagerList    bool // 매니저 리스트
+	Manager        bool // 매니저
+	Female         bool // 여자 아니면 남자
+	AutoDumb       bool // 자동 벙어리
+	DumbBlind      bool // 벙어리 블라인드
+	DobaeBlind     bool // 도배 블라인드
+	DobaeBlind2    bool // 도배 블라인드 2
+	ExitUser       bool // 나간 사람
+	Mobile         bool // 모바일 유저
+	TopFan         bool // 열혈
+	Realname       bool // 실명인증
+	NoDirect       bool // 1:1 직접 채팅 금지
+	GlobalApp      bool // 글로벌 앱
+	QuickView      bool // 퀵뷰 유저
+	SptrSticker    bool // 스티커 서포터
+	Chromecast     bool // 크롬 캐스트
+	Follower       bool // 팔로워
+	NotiVodBalloon bool // VOD 별풍 알림?
+	NotiTopFan     bool // 열혈 알림?
+}
+
+type Flag2 struct {
+	GlobalPC    bool
+	Clan        bool
+	TopClan     bool
+	Top20       bool
+	GameGod     bool
+	ATagAllow   bool
+	NoSuperChat bool
+	NoRecvChat  bool
+	Flash       bool
+	LGGame      bool
+	Employee    bool
+	CleanAti    bool
+	Police      bool
+	AdminChat   bool
+	PC          bool
+	Specify     bool
 }
 
 type ChatMessage struct {
@@ -102,3 +132,29 @@ type Subscription struct {
 	User  User
 	Count int // 구독 개월 수
 }
+
+// type Flag1 struct {
+// 	Admin            bool // 관리자
+// 	Hidden           bool // 아이디 숨김
+// 	BJ               bool // 방장
+// 	Dumb             bool // 벙어리
+// 	Guest            bool // 비회원
+// 	Fanclub          bool // 팬클럽 회원
+// 	AutoManager      bool // 자동 매니저
+// 	ManagerList      bool // 자동 매니저 리스트에 등록된 사람
+// 	SubBJ            bool // 부방장, 매니저
+// 	Female           bool // 여자, 거짓이면 남자
+// 	AutoDumb         bool // 자동 벙어리
+// 	DumbBlind        bool // 벙어리로 인한 블라인드
+// 	PaperingBlind    bool // 도배로 인한 블라인드
+// 	ExitUser         bool // 나간 사람
+// 	Mobile           bool // 모바일 유저
+// 	TopFan           bool // 열혈팬
+// 	Realname         bool // 실명인증
+// 	NoDirect         bool // 1:1 직접 채팅 금지
+// 	GlobalApp        bool // 글로벌 모바일 앱 사용자
+// 	QuickView        bool // 퀵 뷰 사용자
+// 	StickerSupporter bool // 스티커 서포터
+// 	Chromecast       bool // 크롬 캐스트 사용자
+// 	Subscription     bool // 구독팬
+// }

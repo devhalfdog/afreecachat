@@ -14,17 +14,26 @@ import (
 
 // NewClient 함수는 Client 구조체를
 // 초기화하여 생성한다
-func NewClient(token Token) *Client {
-	return &Client{
-		Token:     token,
-		read:      make(chan []byte, 1024),
-		handshake: make([][]byte, 2),
+func NewClient(token Token) (*Client, error) {
+	if token.ChatRoom == "" {
+		return &Client{}, errors.New("need chatroom value")
 	}
+
+	return &Client{
+		Token:           token,
+		read:            make(chan []byte, 1024),
+		handshake:       make([][]byte, 2),
+		channelPassword: "",
+	}, nil
 }
 
 // Connect 메서드는 채팅 서버 연결에 필요한
 // 과정을 수행한다.
-func (c *Client) Connect() error {
+func (c *Client) Connect(password ...string) error {
+	if len(password) > 0 {
+		// 패스워드가 있다면
+		c.channelPassword = password[0]
+	}
 	err := c.createWebsocket()
 	if err != nil {
 		return err
@@ -40,6 +49,9 @@ func (c *Client) Connect() error {
 func (c *Client) setHandshake(svc int) error {
 	err := c.socket.WriteMessage(websocket.BinaryMessage, c.handshake[svc-1])
 	if err != nil {
+		if c.onConnect != nil {
+			c.onConnect(false)
+		}
 		return err
 	}
 
@@ -68,16 +80,16 @@ func (c *Client) setLoginHandshke() error {
 // setJoinHandshake 메서드는 채팅 서버 연결에
 // 필요한 Join Handshake 과정을 수행한다.
 func (c *Client) setJoinHandshake() error {
-	if c.Token.ChatRoom == "" || c.Token.FanTicket == "" {
-		return errors.New("need token value")
-	}
-
-	infoPacket := append(c.SetLogHandshake(DefaultLog()), c.SetInfoHandshake(DefaultInfo())...)
+	infoPacket := append(
+		c.SetLogHandshake(DefaultLog()),
+		c.SetInfoHandshake(DefaultInfo(c.channelPassword))...,
+	)
 	var packet []string
 	packet = append(
 		packet,
 		"\f",
 		c.Token.ChatRoom,
+		"\f",
 		"\f",
 		c.Token.FanTicket,
 		"0",
@@ -146,14 +158,14 @@ func (c *Client) setLogValue(log Log) []byte {
 			k := strings.ToLower(logValue.Type().Field(i).Tag.Get("json"))
 			v := fmt.Sprintf("%v", field.Interface())
 			kv := append([]byte{6}, []byte(k)...)
-			kv = append(kv, 61)
+			kv = append(kv, 6, '=', 6)
 			kv = append(kv, []byte(v)...)
-			kv = append(kv, 6)
+			kv = append(kv, 6, '&')
 			result = append(result, kv...)
 		}
 	}
 
-	return append([]byte{6, 38, 61}, result...)
+	return append([]byte{6, 38}, result...)
 }
 
 // processSocket 메서드는 웹소켓으로
@@ -209,6 +221,7 @@ func (c *Client) startParser(wg *sync.WaitGroup) error {
 	}
 
 	for msg := range c.read {
+		fmt.Printf("%q\n", msg)
 		if strings.HasPrefix(string(msg), "error: ") {
 			wg.Done()
 			return errors.New(string(msg))
@@ -216,7 +229,7 @@ func (c *Client) startParser(wg *sync.WaitGroup) error {
 
 		svc := getServiceCode(msg)
 		switch svc {
-		case 1: // Login, need JOIN handshake
+		case SVC_LOGIN: // Login, need JOIN handshake
 			err = c.setJoinHandshake()
 			if err != nil {
 				return err
@@ -226,27 +239,37 @@ func (c *Client) startParser(wg *sync.WaitGroup) error {
 			if err != nil {
 				return err
 			}
-		case 4: // 입장/퇴장
+		case SVC_JOINCH: // 채널 입장
+			if b := c.parseJoinChannel(msg); b {
+				if c.onJoinChannel != nil {
+					c.onJoinChannel(true)
+				}
+			} else {
+				if c.onJoinChannel != nil {
+					c.onJoinChannel(false)
+				}
+			}
+		case SVC_CHUSER: // 입장/퇴장
 			m := c.parseUserJoin(msg)
 			if c.onUserLists != nil {
 				c.onUserLists(m)
 			}
-		case 5: // Chat
+		case SVC_CHATMESG: // Chat
 			m := c.parseChatMessage(msg)
 			if c.onChatMessage != nil {
 				c.onChatMessage(m)
 			}
-		case 18: // 별풍선
+		case SVC_SENDBALLOON: // 별풍선
 			m := c.parseBalloon(msg)
 			if c.onBalloon != nil {
 				c.onBalloon(m)
 			}
-		case 87: // 애드벌룬
+		case SVC_ADCON_EFFECT: // 애드벌룬
 			m := c.parseAdballoon(msg)
 			if c.onAdballoon != nil {
 				c.onAdballoon(m)
 			}
-		case 91, 93: // 신규 구독 / 연속 구독
+		case SVC_FOLLOW_ITEM, SVC_FOLLOW_ITEM_EFFECT: // 신규 구독 / 연속 구독
 			m := c.parseSubscription(msg, svc)
 			if c.onSubscription != nil {
 				c.onSubscription(m)
@@ -290,15 +313,13 @@ func (c *Client) createWebsocket() error {
 		return nil
 	}
 
-	dialer := websocket.DefaultDialer
+	dialer := websocket.Dialer{
+		HandshakeTimeout: 5 * time.Second, // 설정하지 않으면 너무 오래 대기함.
+	}
 	header := http.Header{}
 	header.Set("Sec-WebSocket-Protocol", "chat")
 
 	var err error
 	c.socket, _, err = dialer.Dial(c.SocketAddress, header)
-	if err != nil {
-		return err
-	}
-
-	return nil
+	return err
 }
