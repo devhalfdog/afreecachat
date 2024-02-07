@@ -52,6 +52,8 @@ func main() {
 ### Callback
 - `OnConnect(bool)`
   - 채널 입장 Handshake가 성공하면 `true`를 반환합니다.
+- `OnRawMessage(string)`
+  - 원본 데이터 문자열을 반환합니다.
 - `OnChatMessage(ChatMessage)`
   - 채팅 메시지가 있을 때마다 `ChatMessage` 구조체를 반환합니다.
 - `OnUserLists([]UserList)`

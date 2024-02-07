@@ -15,6 +15,7 @@ type Client struct {
 	// callback
 	onConnect      func(connect bool)
 	onJoinChannel  func(join bool)
+	onRawMessage   func(message string)
 	onChatMessage  func(message ChatMessage)
 	onUserLists    func(userlist []UserList)
 	onAdballoon    func(adballoon Adballoon)

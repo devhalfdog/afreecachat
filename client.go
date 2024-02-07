@@ -226,6 +226,10 @@ func (c *Client) startParser(wg *sync.WaitGroup) error {
 			return errors.New(string(msg))
 		}
 
+		if c.onRawMessage != nil {
+			c.onRawMessage(fmt.Sprintf("%q", msg))
+		}
+
 		svc := getServiceCode(msg)
 		switch svc {
 		case SVC_LOGIN: // Login, need JOIN handshake

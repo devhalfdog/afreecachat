@@ -9,8 +9,14 @@ func (c *Client) OnConnect(callback func(connect bool)) {
 	c.onConnect = callback
 }
 
+// OnJoinChannel 메서드는 채널 접속에 관한 데이터를 전달한다.
 func (c *Client) OnJoinChannel(callback func(join bool)) {
 	c.onJoinChannel = callback
+}
+
+// OnRawMessage 메서드는 메시지 원문 데이터를 전달한다.
+func (c *Client) OnRawMessage(callback func(message string)) {
+	c.onRawMessage = callback
 }
 
 // OnChatMessage 메서드는 채팅 메시지가 왔을 때 데이터를 전달한다.
