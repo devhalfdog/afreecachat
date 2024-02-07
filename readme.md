@@ -30,21 +30,26 @@ func main() {
     client.OnChatMessage(func(message afreecachat.ChatMessage)) {
         fmt.Printf("ID: %s, NAME: %s, MESSAGE: %s\n", message.User.ID, message.User.Name, message.Message)
     })
+
+    err := client.Connect()
+    if err != nil {
+        panic(err)
+    }
 }
 ```
 
 ### Token
 - `BJID` (필수)
   - 자동으로 `SocketAddress` 및 `ChatRoom`을 가져오기 위한 BJ 아이디입니다.
+- `Flag` (필수)
+  - 채팅 채널 연결에 필요한 유저 플래그 값
+  - example: `524304`
 - `PdBoxTicket`
   - 계정 연동에 필요한 `PdBoxTicket` 쿠키 값
   - 입력하지 않을 경우, 비로그인으로 접속합니다.
 - `FanTicket`
   - 채팅 채널 연결에 필요한 `FanTicket` 값
   - 입력하지 않아도 됩니다.
-- `Flag` (필수)
-  - 채팅 채널 연결에 필요한 유저 플래그 값
-  - example: `524304`
 
 ### Callback
 - `OnConnect(bool)`
