@@ -36,22 +36,17 @@ func main() {
 ```
 
 ### Token
+- `BJID` (필수)
+  - 자동으로 `SocketAddress` 및 `ChatRoom`을 가져오기 위한 BJ 아이디입니다.
 - `PdBoxTicket`
   - 계정 연동에 필요한 `PdBoxTicket` 쿠키 값
   - 입력하지 않을 경우, 비로그인으로 접속합니다.
 - `FanTicket`
   - 채팅 채널 연결에 필요한 `FanTicket` 값
   - 입력하지 않아도 됩니다.
-- `ChatRoom` (필수)
-  - 채팅 채널 연결에 필요한 채팅 채널 값
-  - example: `2132`
 - `Flag` (필수)
   - 채팅 채널 연결에 필요한 유저 플래그 값
   - example: `524304`
-- `SocketAddress` (필수)
-  - 채팅 채널 연결에 필요한 채팅 서버 주소 값
-  - `ChatRoom`과 맞는 주소 값이어야 합니다. 다를 경우 다른 방으로 접속합니다.
-  - example: `wss://{CH_DOMAIN}:{CH_PORT}/Websocket/{BJ_ID}`
 
 ### Callback
 - `OnConnect(bool)`
