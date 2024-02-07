@@ -15,10 +15,10 @@ import (
 // NewClient 함수는 Client 구조체를
 // 초기화하여 생성한다.
 func NewClient(token Token) (*Client, error) {
-	// ChatRoom이 있어야 채팅 접속이 가능하므로 필수 토큰
-	// 없을 경우 에러를 반환한다.
-	if token.ChatRoom == "" {
-		return &Client{}, errors.New("need chatroom value")
+	// BJ ID가 있어야 SocketAddress 및 ChatRoom 설정하므로
+	// 필수 토큰이다. 없을 경우 에러를 반환한다.
+	if token.BJID == "" {
+		return &Client{}, errors.New("need bj id value")
 	}
 
 	return &Client{
@@ -37,8 +37,14 @@ func (c *Client) Connect(password ...string) error {
 		c.channelPassword = password[0]
 	}
 
+	// 자동으로 Socket Address 및 Chat Room를 가져옵니다.
+	err := c.setSocketData()
+	if err != nil {
+		return err
+	}
+
 	// websocket 생성/연결 작업을 수행한다.
-	err := c.createWebsocket()
+	err = c.createWebsocket()
 	if err != nil {
 		return err
 	}
@@ -259,7 +265,7 @@ func (c *Client) createWebsocket() error {
 
 	// 웹소켓 연결
 	var err error
-	c.socket, _, err = dialer.Dial(c.SocketAddress, header)
+	c.socket, _, err = dialer.Dial(c.socketAddress, header)
 	return err
 }
 
@@ -287,7 +293,7 @@ func (c *Client) setJoinHandshake() error {
 	packet = append(
 		packet,
 		"\f",
-		c.Token.ChatRoom,
+		c.Token.chatRoom,
 		"\f",
 		"\f",
 		c.Token.FanTicket,

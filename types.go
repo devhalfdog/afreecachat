@@ -3,11 +3,11 @@ package afreecachat
 import "github.com/gorilla/websocket"
 
 type Client struct {
-	SocketAddress string // Socket Address
-	Token         Token
+	Token Token
 
 	channelPassword string
 	socket          *websocket.Conn
+	socketAddress   string // Socket Address
 	read            chan []byte
 
 	handshake [][]byte
@@ -24,10 +24,11 @@ type Client struct {
 }
 
 type Token struct {
+	BJID        string
 	PdBoxTicket string
 	FanTicket   string
-	ChatRoom    string
 	Flag        string
+	chatRoom    string
 }
 
 type Log struct {
@@ -133,29 +134,3 @@ type Subscription struct {
 	User  User
 	Count int // 구독 개월 수
 }
-
-// type Flag1 struct {
-// 	Admin            bool // 관리자
-// 	Hidden           bool // 아이디 숨김
-// 	BJ               bool // 방장
-// 	Dumb             bool // 벙어리
-// 	Guest            bool // 비회원
-// 	Fanclub          bool // 팬클럽 회원
-// 	AutoManager      bool // 자동 매니저
-// 	ManagerList      bool // 자동 매니저 리스트에 등록된 사람
-// 	SubBJ            bool // 부방장, 매니저
-// 	Female           bool // 여자, 거짓이면 남자
-// 	AutoDumb         bool // 자동 벙어리
-// 	DumbBlind        bool // 벙어리로 인한 블라인드
-// 	PaperingBlind    bool // 도배로 인한 블라인드
-// 	ExitUser         bool // 나간 사람
-// 	Mobile           bool // 모바일 유저
-// 	TopFan           bool // 열혈팬
-// 	Realname         bool // 실명인증
-// 	NoDirect         bool // 1:1 직접 채팅 금지
-// 	GlobalApp        bool // 글로벌 모바일 앱 사용자
-// 	QuickView        bool // 퀵 뷰 사용자
-// 	StickerSupporter bool // 스티커 서포터
-// 	Chromecast       bool // 크롬 캐스트 사용자
-// 	Subscription     bool // 구독팬
-// }
