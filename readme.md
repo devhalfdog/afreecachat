@@ -17,17 +17,15 @@
 
 func main() {
     token := afreecachat.Token{
+        BJID: {BJ ID}
         PdBoxTicket: {PdBoxTicket},
         FanTicket: {FanTicket},
-        ChatRoom: {ChatRoom},
         Flag: {Flag},
     }
     client, err := afreecachat.NewClient(token)
     if err != nil {
         panic(err)
     }
-
-    client.SocketAddress = {WebSocket Address}
 
     client.OnChatMessage(func(message afreecachat.ChatMessage)) {
         fmt.Printf("ID: %s, NAME: %s, MESSAGE: %s\n", message.User.ID, message.User.Name, message.Message)
