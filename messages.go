@@ -114,3 +114,11 @@ func (c *Client) parseSubscription(message []byte, svc int) Subscription {
 
 	return subscription
 }
+
+// parseAdminNotice 메서드는 전달된 데이터의
+// 서비스 코드가 58일 때 이 데이터를 이용해 문자열을 반환한다.
+func (c *Client) parseAdminNotice(message []byte) string {
+	msg := strings.Split(string(message), "\f")
+
+	return msg[1]
+}

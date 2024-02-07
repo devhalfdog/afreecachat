@@ -217,6 +217,11 @@ func (c *Client) startParser(wg *sync.WaitGroup) error {
 			if c.onSubscription != nil {
 				c.onSubscription(m)
 			}
+		case SVC_SENDADMINNOTICE:
+			m := c.parseAdminNotice(msg)
+			if c.onAdminNotice != nil {
+				c.onAdminNotice(m)
+			}
 		}
 	}
 

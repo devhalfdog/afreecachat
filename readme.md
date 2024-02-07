@@ -17,7 +17,7 @@
 
 func main() {
     token := afreecachat.Token{
-        BJID: {BJ ID}
+        BJID: {BJ ID},
         PdBoxTicket: {PdBoxTicket},
         FanTicket: {FanTicket},
         Flag: {Flag},
@@ -66,6 +66,9 @@ func main() {
   - 애드벌룬 메시지가 있을 때마다 `Adballoon` 구조체를 반환합니다.
 - `OnSubscription(Subscription)`
   - 구독 메시지가 있을 때마다 `Subscription` 구조체를 반환합니다.
+- `OnAdminNotice(string)`
+  - 운영자 알림 메시지가 있을 때마다 문자열을 반환합니다.
+  - example: "{BJ NAME}님의 방송이 별별랭킹의 '웃음이 끊이지 않는 방송' 1위에 등극!"
 
 ### 예제
 - 별풍선을 받을 때마다 [Warudo](https://warudo.app/) OSC 통신 예제 [문서](https://github.com/devhalfdog/afreeca-warudo)

@@ -56,7 +56,7 @@ const (
 	SVC_BDM_ADDBLACKINFO      = 52
 	SVC_SETBROADINFO          = 53
 	SVC_BAN_WORD              = 54
-	SVC_SENDADMINNOTICE       = 58
+	SVC_SENDADMINNOTICE       = 58 /* 별별 랭킹 그런거 */
 	SVC_FREECAT_OWNER_JOIN    = 65
 	SVC_BUYGOODS              = 70
 	SVC_BUYGOODSSUB           = 71

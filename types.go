@@ -21,6 +21,7 @@ type Client struct {
 	onAdballoon    func(adballoon Adballoon)
 	onBalloon      func(balloon Balloon)
 	onSubscription func(subscrption Subscription)
+	onAdminNotice  func(message string)
 }
 
 type Token struct {

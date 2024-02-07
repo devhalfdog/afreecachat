@@ -43,3 +43,8 @@ func (c *Client) OnAdballoon(callback func(adballoon Adballoon)) {
 func (c *Client) OnSubscription(callback func(subscription Subscription)) {
 	c.onSubscription = callback
 }
+
+// OnAdminNotice 메서드는 운영자 알림 데이터를 전달한다.
+func (c *Client) OnAdminNotice(callback func(message string)) {
+	c.onAdminNotice = callback
+}
