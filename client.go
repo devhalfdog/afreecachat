@@ -183,71 +183,60 @@ func (c *Client) startParser(wg *sync.WaitGroup) error {
 		case SVC_LOGIN: // Login, need JOIN handshake
 			c.executeHandshake(SVC_JOINCH)
 		case SVC_JOINCH: // 채널 입장
-			if b := c.parseJoinChannel(msg); b {
-				if c.onJoinChannel != nil {
+			if c.onJoinChannel != nil {
+				if b := c.parseJoinChannel(msg); b {
 					c.onJoinChannel(true)
-				}
-			} else {
-				if c.onJoinChannel != nil {
+				} else {
 					c.onJoinChannel(false)
 				}
 			}
 		case SVC_CHUSER: // 입장/퇴장
-			m := c.parseUserJoin(msg)
 			if c.onUserLists != nil {
+				m := c.parseUserJoin(msg)
 				c.onUserLists(m)
 			}
 		case SVC_CHATMESG: // Chat
-			m, err := c.parseChatMessage(msg)
-			if err != nil {
-				if c.onError != nil {
+			if c.onChatMessage != nil {
+				m, err := c.parseChatMessage(msg)
+				if err != nil && c.onError != nil {
 					c.onError(err)
-				}
-			} else {
-				if c.onChatMessage != nil {
+				} else {
 					c.onChatMessage(m)
 				}
 			}
 		case SVC_SENDBALLOON: // 별풍선
-			m, err := c.parseBalloon(msg)
-			if err != nil {
-				if c.onError != nil {
+			if c.onBalloon != nil {
+				m, err := c.parseBalloon(msg)
+				if err != nil && c.onError != nil {
 					c.onError(err)
-				}
-			} else {
-				if c.onBalloon != nil {
+				} else {
 					c.onBalloon(m)
 				}
 			}
 		case SVC_ADCON_EFFECT: // 애드벌룬
-			m, err := c.parseAdballoon(msg)
-			if err != nil {
-				if c.onError != nil {
+			if c.onAdballoon != nil {
+				m, err := c.parseAdballoon(msg)
+				if err != nil && c.onError != nil {
 					c.onError(err)
-				}
-			} else {
-				if c.onAdballoon != nil {
+				} else {
 					c.onAdballoon(m)
 				}
 			}
 		case SVC_FOLLOW_ITEM, SVC_FOLLOW_ITEM_EFFECT: // 신규 구독 / 연속 구독
-			m, err := c.parseSubscription(msg, svc)
-			if err != nil {
-				if c.onError != nil {
-					c.onError(err)
-				}
-			}
 			if c.onSubscription != nil {
-				c.onSubscription(m)
+				m, err := c.parseSubscription(msg, svc)
+				if err != nil && c.onError != nil {
+					c.onError(err)
+				} else {
+					c.onSubscription(m)
+				}
 			}
 		case SVC_SENDADMINNOTICE: // 어드민 메시지
-			m, err := c.parseAdminNotice(msg)
-			if err != nil {
-				if c.onError != nil {
+			if c.onAdminNotice != nil {
+				m, err := c.parseAdminNotice(msg)
+				if err != nil && c.onError != nil {
 					c.onError(err)
-				}
-			} else {
-				if c.onAdminNotice != nil {
+				} else {
 					c.onAdminNotice(m)
 				}
 			}
