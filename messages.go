@@ -48,6 +48,12 @@ func (c *Client) parseChatMessage(message []byte) (ChatMessage, error) {
 		return ChatMessage{}, err
 	}
 
+	// 구독 개월이 -1 이라면 구독을 하지 않은 사람이지만
+	// 가독성을 위해 0으로 바꿈
+	if subMonth == -1 {
+		subMonth = 0
+	}
+
 	cm := ChatMessage{
 		User: User{
 			ID:             removeParentheses(strings.TrimSpace(msg[2])),

@@ -88,7 +88,7 @@ type Flag1 struct {
 	QuickView      bool // 퀵뷰 유저
 	SptrSticker    bool // 스티커 서포터
 	Chromecast     bool // 크롬 캐스트
-	Follower       bool // 팔로워
+	Follower       bool // 구독자
 	NotiVodBalloon bool // VOD 별풍 알림?
 	NotiTopFan     bool // 열혈 알림?
 }
