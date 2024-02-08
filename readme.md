@@ -24,13 +24,23 @@ func main() {
     }
     client, err := afreecachat.NewClient(token)
     if err != nil {
+        // client 생성 중 에러가 발생할 경우
+        // panic() 을 호출합니다.
         panic(err)
     }
 
-    client.OnChatMessage(func(message afreecachat.ChatMessage)) {
+    client.OnError(func(err error) {
+        // 에러가 발생할 경우 에러를 출력합니다.
+        fmt.Println(err)
+    })
+
+    client.OnChatMessage(func(message afreecachat.ChatMessage) {
+        // 채팅 메시지가 있을 경우 ID, NAME, MESSAGE를 출력합니다.
         fmt.Printf("ID: %s, NAME: %s, MESSAGE: %s\n", message.User.ID, message.User.Name, message.Message)
     })
 
+    // 채팅방 접속을 시도합니다.
+    // 에러가 발생할 경우 panic()을 호출합니다.
     err := client.Connect()
     if err != nil {
         panic(err)
@@ -52,6 +62,8 @@ func main() {
   - 입력하지 않아도 됩니다.
 
 ### Callback
+- `OnError(error)`
+  - 에러가 발생할 경우 에러를 반환합니다.
 - `OnConnect(bool)`
   - 채널 입장 Handshake가 성공하면 `true`를 반환합니다.
 - `OnRawMessage(string)`
@@ -84,4 +96,4 @@ func main() {
 - [ ] 테스트 파일 작성
 
 ## 레퍼런스
-- [wakscord/afreeca](https://github.com/wakscord/afreeca)
+- [https://github.com/wakscord/afreeca](https://github.com/wakscord/afreeca)
