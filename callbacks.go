@@ -4,6 +4,10 @@ package afreecachat
  * callbacks *
  *************/
 
+func (c *Client) OnError(callback func(err error)) {
+	c.onError = callback
+}
+
 // OnConnect 메서드는 서버와 연결에 관한 데이터를 전달한다.
 func (c *Client) OnConnect(callback func(connect bool)) {
 	c.onConnect = callback

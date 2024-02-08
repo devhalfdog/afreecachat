@@ -198,29 +198,58 @@ func (c *Client) startParser(wg *sync.WaitGroup) error {
 				c.onUserLists(m)
 			}
 		case SVC_CHATMESG: // Chat
-			m := c.parseChatMessage(msg)
-			if c.onChatMessage != nil {
-				c.onChatMessage(m)
+			m, err := c.parseChatMessage(msg)
+			if err != nil {
+				if c.onError != nil {
+					c.onError(err)
+				}
+			} else {
+				if c.onChatMessage != nil {
+					c.onChatMessage(m)
+				}
 			}
 		case SVC_SENDBALLOON: // 별풍선
-			m := c.parseBalloon(msg)
-			if c.onBalloon != nil {
-				c.onBalloon(m)
+			m, err := c.parseBalloon(msg)
+			if err != nil {
+				if c.onError != nil {
+					c.onError(err)
+				}
+			} else {
+				if c.onBalloon != nil {
+					c.onBalloon(m)
+				}
 			}
 		case SVC_ADCON_EFFECT: // 애드벌룬
-			m := c.parseAdballoon(msg)
-			if c.onAdballoon != nil {
-				c.onAdballoon(m)
+			m, err := c.parseAdballoon(msg)
+			if err != nil {
+				if c.onError != nil {
+					c.onError(err)
+				}
+			} else {
+				if c.onAdballoon != nil {
+					c.onAdballoon(m)
+				}
 			}
 		case SVC_FOLLOW_ITEM, SVC_FOLLOW_ITEM_EFFECT: // 신규 구독 / 연속 구독
-			m := c.parseSubscription(msg, svc)
+			m, err := c.parseSubscription(msg, svc)
+			if err != nil {
+				if c.onError != nil {
+					c.onError(err)
+				}
+			}
 			if c.onSubscription != nil {
 				c.onSubscription(m)
 			}
-		case SVC_SENDADMINNOTICE:
-			m := c.parseAdminNotice(msg)
-			if c.onAdminNotice != nil {
-				c.onAdminNotice(m)
+		case SVC_SENDADMINNOTICE: // 어드민 메시지
+			m, err := c.parseAdminNotice(msg)
+			if err != nil {
+				if c.onError != nil {
+					c.onError(err)
+				}
+			} else {
+				if c.onAdminNotice != nil {
+					c.onAdminNotice(m)
+				}
 			}
 		}
 	}

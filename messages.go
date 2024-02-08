@@ -1,6 +1,7 @@
 package afreecachat
 
 import (
+	"errors"
 	"strconv"
 	"strings"
 )
@@ -34,11 +35,18 @@ func (c *Client) parseUserJoin(message []byte) []UserList {
 // parseChatMessage 메서드는 전달된 데이터의
 // 서비스 코드가 5일 때 이 데이터를 이용해
 // ChatMessage 구조체로 초기화하고 반환한다.
-func (c *Client) parseChatMessage(message []byte) ChatMessage {
+func (c *Client) parseChatMessage(message []byte) (ChatMessage, error) {
 	msg := strings.Split(string(message), "\f")
+	if !(len(msg) >= 8) {
+		return ChatMessage{}, errors.New("message splitting failure [5]")
+	}
+
 	flags := strings.Split(msg[7], "|")
 	userFlag := setFlag(flags)
-	subMonth, _ := strconv.Atoi(msg[8])
+	subMonth, err := strconv.Atoi(msg[8])
+	if err != nil {
+		return ChatMessage{}, err
+	}
 
 	cm := ChatMessage{
 		User: User{
@@ -50,15 +58,23 @@ func (c *Client) parseChatMessage(message []byte) ChatMessage {
 		Message: strings.TrimSpace(msg[1]),
 	}
 
-	return cm
+	return cm, nil
 }
 
 // parseBallon 메서드는 전달된 데이터의
 // 서비스 코드가 18일 때 이 데이터를 이용해
 // Ballon 구조체로 초기화하고 반환한다.
-func (c *Client) parseBalloon(message []byte) Balloon {
+func (c *Client) parseBalloon(message []byte) (Balloon, error) {
 	msg := strings.Split(string(message), "\f")
-	balloonCount, _ := strconv.Atoi(msg[4])
+	if !(len(msg) >= 4) {
+		return Balloon{}, errors.New("message splitting failure [18]")
+	}
+
+	balloonCount, err := strconv.Atoi(msg[4])
+	if err != nil {
+		return Balloon{}, err
+	}
+
 	user := User{
 		ID:   msg[2],
 		Name: msg[3],
@@ -68,43 +84,64 @@ func (c *Client) parseBalloon(message []byte) Balloon {
 		Count: balloonCount,
 	}
 
-	return balloon
+	return balloon, nil
 }
 
 // parseAdballoon 메서드는 전달된 데이터의
 // 서비스 코드가 87일 때 이 데이터를 이용해
 // Adballoon 구조체로 초기화하고 반환한다.
-func (c *Client) parseAdballoon(message []byte) Adballoon {
+func (c *Client) parseAdballoon(message []byte) (Adballoon, error) {
 	msg := strings.Split(string(message), "\f")
-	adballoonCount, _ := strconv.Atoi(msg[10])
+	if !(len(msg) >= 10) {
+		return Adballoon{}, errors.New("message splitting failure [87]")
+	}
+
+	adballoonCount, err := strconv.Atoi(msg[10])
+	if err != nil {
+		return Adballoon{}, err
+	}
+
 	user := User{
 		ID:   msg[3],
 		Name: msg[4],
 	}
+
 	adballoon := Adballoon{
 		User:  user,
 		Count: adballoonCount,
 	}
 
-	return adballoon
+	return adballoon, nil
 }
 
 // parseSubscription 메서드는 전달된 데이터의
 // 서비스 코드가 91, 93일 때 이 데이터를 이용해
 // Subscription 구조체로 초기화하고 반환한다.
-func (c *Client) parseSubscription(message []byte, svc int) Subscription {
+func (c *Client) parseSubscription(message []byte, svc int) (Subscription, error) {
 	msg := strings.Split(string(message), "\f")
+	if !(len(msg) >= 8) {
+		return Subscription{}, errors.New("message splitting failure [91]")
+	}
+
 	var user User
+	var err error
 	count := 1
-	if svc == 91 {
-		// 신규 구독
+
+	switch svc {
+	case SVC_FOLLOW_ITEM: // 구독
 		user.ID = removeParentheses(msg[3])
 		user.Name = msg[4]
-	} else if svc == 93 {
-		// 연속 구독
+		count, err = strconv.Atoi(msg[5])
+		if err != nil {
+			return Subscription{}, err
+		}
+	case SVC_FOLLOW_ITEM_EFFECT: // 구독 이펙트 (언제 실행되는 지 연구 필요.)
 		user.ID = removeParentheses(msg[2])
 		user.Name = msg[3]
-		count, _ = strconv.Atoi(msg[4])
+		count, err = strconv.Atoi(msg[4])
+		if err != nil {
+			return Subscription{}, err
+		}
 	}
 
 	subscription := Subscription{
@@ -112,13 +149,17 @@ func (c *Client) parseSubscription(message []byte, svc int) Subscription {
 		Count: count,
 	}
 
-	return subscription
+	return subscription, nil
 }
 
 // parseAdminNotice 메서드는 전달된 데이터의
 // 서비스 코드가 58일 때 이 데이터를 이용해 문자열을 반환한다.
-func (c *Client) parseAdminNotice(message []byte) string {
+func (c *Client) parseAdminNotice(message []byte) (string, error) {
 	msg := strings.Split(string(message), "\f")
 
-	return msg[1]
+	if len(msg) > 0 {
+		return msg[1], nil
+	}
+
+	return "", errors.New("message splitting failure [58]")
 }

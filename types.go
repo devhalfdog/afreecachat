@@ -13,6 +13,7 @@ type Client struct {
 	handshake [][]byte
 
 	// callback
+	onError        func(err error)
 	onConnect      func(connect bool)
 	onJoinChannel  func(join bool)
 	onRawMessage   func(message string)
