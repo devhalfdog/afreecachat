@@ -15,21 +15,16 @@ func (c *Client) parseJoinChannel(message []byte) bool {
 // 서비스 코드가 4일 때 이 데이터를 이용해
 // User 구조체로 초기화하고 반환한다.
 func (c *Client) parseUserJoin(message []byte) []UserList {
-	// userlist := make([]User, 0)
 	msg := strings.Split(string(message), "\f")
-	var userlist []UserList
 
 	if len(msg) > 10 {
 		// 여러 명의 유저일 경우
 		// 최초 실행이기 때문에 무조건 입장했다고 표시함.
-		ul := parseMultiUserList(msg)
-		return ul
-	} else {
-		// 단일 유저일 경우
-		userlist = append(userlist, parseSingleUserList(msg))
+		return parseMultiUserList(msg)
 	}
 
-	return userlist
+	// 단일 유저일 경우
+	return []UserList{parseSingleUserList(msg)}
 }
 
 // parseChatMessage 메서드는 전달된 데이터의

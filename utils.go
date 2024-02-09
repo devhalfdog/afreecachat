@@ -30,8 +30,6 @@ func DefaultInfo(password string) Info {
 	return Info{
 		Password: password,
 		AuthInfo: "undefined",
-		// PVer:         "2",
-		// AccessSystem: "html5",
 	}
 }
 
@@ -60,21 +58,19 @@ func makeHeader(svc int, plen int, option int) []byte {
 
 // readInt 함수는 전달된 데이터를
 // int 로 변환한다.
-func readInt(message []byte) int {
+func readInt(message []byte) (int, error) {
 	result := ""
 	for _, b := range message {
 		result += string(b)
 	}
 
-	svc, _ := strconv.Atoi(result)
-	return svc
+	return strconv.Atoi(result)
 }
 
 // getServiceCode 메서드는 전달된 데이터의
 // 일부를 검사하여 서비스 코드를 반환한다.
-func getServiceCode(message []byte) int {
-	svcCode := readInt(message[2:6])
-	return svcCode
+func getServiceCode(message []byte) (int, error) {
+	return readInt(message[2:6])
 }
 
 func parseMultiUserList(msg []string) []UserList {
