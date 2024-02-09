@@ -30,8 +30,6 @@ func DefaultInfo(password string) Info {
 	return Info{
 		Password: password,
 		AuthInfo: "undefined",
-		// PVer:         "2",
-		// AccessSystem: "html5",
 	}
 }
 
