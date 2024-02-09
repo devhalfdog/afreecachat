@@ -178,7 +178,11 @@ func (c *Client) startParser(wg *sync.WaitGroup) error {
 			c.onRawMessage(fmt.Sprintf("%q", msg))
 		}
 
-		svc := getServiceCode(msg)
+		svc, err := getServiceCode(msg)
+		if err != nil && c.onError != nil {
+			c.onError(err)
+		}
+
 		switch svc {
 		case SVC_LOGIN: // Login, need JOIN handshake
 			c.executeHandshake(SVC_JOINCH)
