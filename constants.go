@@ -80,7 +80,7 @@ const (
 	SVC_BJ_NOTICE             = 104 /* BJ 공지 */
 	SVC_VIDEOBALLOON          = 105
 	SVC_STATION_ADCON         = 107
-	SVC_SENDSUBSCRIPTION      = 108
+	SVC_SENDSUBSCRIPTION      = 108 /* 구독권 선물 */
 	SVC_OGQ_EMOTICON          = 109
 	SVC_ITEM_DROPS            = 111
 	SVC_VIDEOBALLOON_LINK     = 117 /* 사용하지 않음 */
