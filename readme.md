@@ -90,10 +90,11 @@ func main() {
 
 - [ ] 에러 처리
   - `"\x1b\t000100005807\f시스템 에러가 발생 했습니다. (중복 세션)\f"`
-- [ ] 비밀방 접속
+- [x] 비밀방 접속
 - [ ] 스티커를 받았을 때 콜백
 - [ ] 코드 최적화
 - [ ] 테스트 파일 작성
+- [ ] 회원일 경우 플래그 설정
 
 ## 레퍼런스
 - [https://github.com/wakscord/afreeca](https://github.com/wakscord/afreeca)
