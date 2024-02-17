@@ -18,8 +18,10 @@
 func main() {
     token := afreecachat.Token{
         BJID: {BJ ID},
-        PdBoxTicket: {PdBoxTicket},
-        FanTicket: {FanTicket},
+        Identifier: afreecachat.Identifier{
+          ID:       {ID},
+          Password: {PW},
+        }
         Flag: {Flag},
     }
     client, err := afreecachat.NewClient(token)
@@ -54,9 +56,9 @@ func main() {
 - `Flag` (필수)
   - 채팅 채널 연결에 필요한 유저 플래그 값
   - example: `524304`
-- `Identify`
+- `Identifier`
   - 채팅 채널 연결을 할 때 로그인 데이터
-  - `Identify.ID` 및 `Identify.Password`의 값이 있을 경우 자동으로 로그인을 진행합니다.
+  - `Identifier.ID` 및 `Identifier.Password`의 값이 있을 경우 자동으로 로그인을 진행합니다.
   - 입력하지 않을 경우 비로그인으로 채팅 채널에 연결합니다.
 
 ### Callback
