@@ -1,6 +1,10 @@
 package afreecachat
 
-import "github.com/gorilla/websocket"
+import (
+	"net/http"
+
+	"github.com/gorilla/websocket"
+)
 
 type Client struct {
 	Token Token
@@ -9,6 +13,7 @@ type Client struct {
 	socket          *websocket.Conn
 	socketAddress   string // Socket Address
 	read            chan []byte
+	httpClient      *http.Client
 
 	handshake [][]byte
 
@@ -26,11 +31,18 @@ type Client struct {
 }
 
 type Token struct {
-	BJID        string
-	PdBoxTicket string
-	FanTicket   string
-	Flag        string
+	BJID       string
+	Identifier Identifier
+	Flag       string
+
+	pdBoxTicket string
+	fanTicket   string
 	chatRoom    string
+}
+
+type Identifier struct {
+	ID       string
+	Password string
 }
 
 type Log struct {
