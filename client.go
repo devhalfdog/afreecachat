@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"net/http/cookiejar"
 	"reflect"
 	"strings"
 	"sync"
@@ -21,11 +22,21 @@ func NewClient(token Token) (*Client, error) {
 		return &Client{}, errors.New("need bj id value")
 	}
 
+	// 로그인을 위한 쿠키 저장소 초기화
+	jar, err := cookiejar.New(&cookiejar.Options{})
+	if err != nil {
+		return nil, err
+	}
+
 	return &Client{
 		Token:           token,
 		read:            make(chan []byte, 1024),
 		handshake:       make([][]byte, 2),
 		channelPassword: "",
+		httpClient: &http.Client{
+			Jar:     jar,
+			Timeout: 2 * time.Second,
+		},
 	}, nil
 }
 
@@ -35,6 +46,14 @@ func (c *Client) Connect(password ...string) error {
 	// 패스워드가 있다면 필드에 값을 대입한다.
 	if len(password) > 0 {
 		c.channelPassword = password[0]
+	}
+
+	// Identifier 값이 있다면 로그인 과정을 수행한다.
+	if c.Token.Identifier.ID != "" && c.Token.Identifier.Password != "" {
+		err := c.login()
+		if err != nil {
+			return err
+		}
 	}
 
 	// 자동으로 Socket Address 및 Chat Room를 가져옵니다.
@@ -251,7 +270,12 @@ func (c *Client) startParser(wg *sync.WaitGroup) error {
 }
 
 // SendChatMessage 메서드는 채팅 채널에 채팅 데이터를 전송한다.
+// 메시지를 보낼 때 실패한 경우 에러를 반환한다.
 func (c *Client) SendChatMessage(message string) error {
+	if c.Token.pdBoxTicket == "" {
+		return errors.New("cannot non-member send message. need PdBoxTicket token")
+	}
+
 	var tBuf []string
 	tBuf = append(tBuf, "\f", message, "\f", "0", "\f")
 	bodyBuf := makeBuffer(tBuf)
@@ -304,7 +328,7 @@ func (c *Client) setLoginHandshke() error {
 	}
 
 	var packet []string
-	packet = append(packet, "\f", c.Token.PdBoxTicket, "\f", "\f", c.Token.Flag, "\f")
+	packet = append(packet, "\f", c.Token.pdBoxTicket, "\f", "\f", c.Token.Flag, "\f")
 
 	return c.setHandshakeData(1, packet)
 }
@@ -323,7 +347,7 @@ func (c *Client) setJoinHandshake() error {
 		c.Token.chatRoom,
 		"\f",
 		"\f",
-		c.Token.FanTicket,
+		c.Token.fanTicket,
 		"0",
 		"\f",
 		"",
