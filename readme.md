@@ -54,12 +54,10 @@ func main() {
 - `Flag` (필수)
   - 채팅 채널 연결에 필요한 유저 플래그 값
   - example: `524304`
-- `PdBoxTicket`
-  - 계정 연동에 필요한 `PdBoxTicket` 쿠키 값
-  - 입력하지 않을 경우, 비로그인으로 접속합니다.
-- `FanTicket`
-  - 채팅 채널 연결에 필요한 `FanTicket` 값
-  - 입력하지 않아도 됩니다.
+- `Identify`
+  - 채팅 채널 연결을 할 때 로그인 데이터
+  - `Identify.ID` 및 `Identify.Password`의 값이 있을 경우 자동으로 로그인을 진행합니다.
+  - 입력하지 않을 경우 비로그인으로 채팅 채널에 연결합니다.
 
 ### Callback
 - `OnError(error)`
@@ -95,6 +93,8 @@ func main() {
 - [ ] 코드 최적화
 - [ ] 테스트 파일 작성
 - [ ] 회원일 경우 플래그 설정
+- [x] 로그인
+  - 연령제한 방송에 접근하기 위해서는 인증된 계정 토큰이 필요함.
 
 ## 레퍼런스
 - [https://github.com/wakscord/afreeca](https://github.com/wakscord/afreeca)
