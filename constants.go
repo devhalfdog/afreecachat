@@ -28,7 +28,7 @@ const (
 	SVC_SLOWMODE              = 23
 	SVC_RELOADBURNLEVEL       = 24 /* 사용하지 않음 */
 	SVC_BLINDKICK             = 25 /* 사용하지 않음 */
-	SVC_MANAGERCHAT           = 26
+	SVC_MANAGERCHAT           = 26 /* 매니저 채팅, 읽을 수 있는 권리는 매니저 flag 이상만 */
 	SVC_APPENDDATA            = 27 /* 사용하지 않음 */
 	SVC_BASEBALLEVENT         = 28 /* 사용하지 않음 */
 	SVC_PAIDITEM              = 29 /* 사용하지 않음 */
