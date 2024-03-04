@@ -153,8 +153,9 @@ func (c *Client) processSocket() error {
 	}
 
 	// 웹소켓으로 넘어오는 데이터를 분석/가공한다.
-	err = c.startParser(&wg)
+	err = c.startParser()
 	if err != nil {
+		wg.Done()
 		return err
 	}
 
@@ -186,10 +187,10 @@ func (c *Client) reader(wg *sync.WaitGroup) {
 
 // startParser 메서드는 read 필드로 전달된 데이터를
 // 처리하여 콜백 함수로 전달한다.
-func (c *Client) startParser(wg *sync.WaitGroup) error {
+func (c *Client) startParser() error {
 	for msg := range c.read {
 		if strings.HasPrefix(string(msg), "error: ") {
-			wg.Done()
+			// wg.Done()
 			return errors.New(string(msg))
 		}
 
