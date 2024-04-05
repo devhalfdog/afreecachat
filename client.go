@@ -264,6 +264,15 @@ func (c *Client) startParser() error {
 					c.onAdminNotice(m)
 				}
 			}
+		case SVC_MISSION: // 도전미션
+			if c.onMission != nil {
+				m, err := c.parseMission(msg)
+				if err != nil && c.onError != nil {
+					c.onError(err)
+				} else {
+					c.onMission(m)
+				}
+			}
 		}
 	}
 

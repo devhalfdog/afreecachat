@@ -1,6 +1,7 @@
 package afreecachat
 
 import (
+	"encoding/json"
 	"errors"
 	"strconv"
 	"strings"
@@ -163,4 +164,37 @@ func (c *Client) parseAdminNotice(message []byte) (string, error) {
 	}
 
 	return "", errors.New("message splitting failure [58]")
+}
+
+// parseMission 메서드는 전달된 데이터의
+// 서비스 코드가 121일 때 이 데이터를 이용해
+// Mission 구조체로 초기화하고 반환한다.
+func (c *Client) parseMission(message []byte) (Mission, error) {
+	msg := strings.Split(string(message), "\f")
+	if !(len(msg) > 1) {
+		return Mission{}, errors.New("message splitting failure [121]")
+	}
+
+	var jsonData map[string]interface{}
+	err := json.Unmarshal([]byte(msg[1]), &jsonData)
+	if err != nil {
+		return Mission{}, errors.New("json unmarshal failure [121]")
+	}
+
+	mission := Mission{
+		User: User{
+			ID:   jsonData["user_id"].(string),
+			Name: jsonData["user_nick"].(string),
+		},
+		Title: jsonData["title"].(string),
+	}
+
+	switch v := jsonData["gift_count"].(type) {
+	case float64:
+		mission.Count = int(v)
+	case int:
+		mission.Count = v
+	}
+
+	return mission, nil
 }

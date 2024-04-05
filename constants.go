@@ -87,8 +87,10 @@ const (
 	SVC_OGQ_EMOTICON_GIFT     = 118 /* OGQ 이모티콘 선물 */
 	SVC_AD_IN_BROAD_JSON      = 119
 	SVC_GEM_ITEMSEND          = 120
-	SVC_MISSION               = 121 /* 도전 미션 ? */
+	SVC_MISSION               = 121 /* 도전 미션 */
 	SVC_LIVE_CAPTION          = 122
 	SVC_MISSION_SETTLE        = 125
 	SVC_SET_ADMIN_FLAG        = 126
+	SVC_CHUSER_EXTEND         = 127
+	SVC_ADMIN_CHUSER_EXTEND   = 128
 )

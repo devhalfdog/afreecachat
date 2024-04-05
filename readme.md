@@ -52,13 +52,13 @@ func main() {
 
 ### Token
 - `BJID` (필수)
-  - 자동으로 `SocketAddress` 및 `ChatRoom`을 가져오기 위한 BJ 아이디입니다.
+  - 자동으로 `socketAddress` 및 `chatRoom`을 가져오기 위한 BJ 아이디입니다.
 - `Flag` (필수)
   - 채팅 채널 연결에 필요한 유저 플래그 값
   - example: `524304`
 - `Identifier`
   - 채팅 채널 연결을 할 때 로그인 데이터
-  - `Identifier.ID` 및 `Identifier.Password`의 값이 있을 경우 자동으로 로그인을 진행합니다.
+  - `Identifier.ID` 와 `Identifier.Password`의 값이 있을 경우 자동으로 로그인을 진행합니다.
   - 입력하지 않을 경우 비로그인으로 채팅 채널에 연결합니다.
 
 ### Callback
@@ -80,23 +80,29 @@ func main() {
   - 구독 메시지가 있을 때마다 `Subscription` 구조체를 반환합니다.
 - `OnAdminNotice(string)`
   - 운영자 알림 메시지가 있을 때마다 문자열을 반환합니다.
-  - example: "{BJ NAME}님의 방송이 별별랭킹의 '웃음이 끊이지 않는 방송' 1위에 등극!"
+  - example: `"{BJ NAME}님의 방송이 별별랭킹의 '웃음이 끊이지 않는 방송' 1위에 등극!"`
+- `OnMisson(Misson)`
+  - 도전미션 별풍선 메시지가 있을 때마다 `Misson` 구조체를 반환합니다.
 
 ### 예제
-- 별풍선을 받을 때마다 [Warudo](https://warudo.app/) OSC 통신 예제 [문서](https://github.com/devhalfdog/afreeca-warudo)
+- [Warudo](https://warudo.app)
+  - [별풍선을 받을 때마다 OSC 통신 예제](https://github.com/devhalfdog/afreeca-warudo)
+
+다른 프로그램(VSeeFace, Unity) 등 예제는 작성중입니다.
+
 
 ## TODO
 아래에 작성된 순서는 개발 순서가 아닌 생각난 대로 작성하였습니다.
 
-- [ ] 에러 처리
-  - `"\x1b\t000100005807\f시스템 에러가 발생 했습니다. (중복 세션)\f"`
-- [x] 비밀방 접속
-- [ ] 스티커를 받았을 때 콜백
+- 기능
+  - [ ] 스티커를 받았을 때 콜백
+  - [ ] 현재 채팅방에 있는 구독자 가져오기
+  - [ ] 테스트 파일 작성
+  - [ ] 에러 처리
+    - [ ] 조금 더 자세한 에러 메시지 반환
+    - [ ] `"\x1b\t000100005807\f시스템 에러가 발생 했습니다. (중복 세션)\f"`\
+
 - [ ] 코드 최적화
-- [ ] 테스트 파일 작성
-- [ ] 회원일 경우 플래그 설정
-- [x] 로그인
-  - 연령제한 방송에 접근하기 위해서는 인증된 계정 토큰이 필요함.
 
 ## 레퍼런스
 - [https://github.com/wakscord/afreeca](https://github.com/wakscord/afreeca)

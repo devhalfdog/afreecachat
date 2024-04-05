@@ -52,3 +52,7 @@ func (c *Client) OnSubscription(callback func(subscription Subscription)) {
 func (c *Client) OnAdminNotice(callback func(message string)) {
 	c.onAdminNotice = callback
 }
+
+func (c *Client) OnMission(callback func(mission Mission)) {
+	c.onMission = callback
+}

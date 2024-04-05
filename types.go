@@ -28,6 +28,7 @@ type Client struct {
 	onBalloon      func(balloon Balloon)
 	onSubscription func(subscrption Subscription)
 	onAdminNotice  func(message string)
+	onMission      func(mission Mission)
 }
 
 type Token struct {
@@ -147,4 +148,10 @@ type Adballoon struct {
 type Subscription struct {
 	User  User
 	Count int // 구독 개월 수
+}
+
+type Mission struct {
+	User  User   // 유저
+	Title string // 미션 이름
+	Count int    // 미션 별풍선 갯수
 }
