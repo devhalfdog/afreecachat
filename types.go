@@ -1,6 +1,8 @@
 package afreecachat
 
 import (
+	"time"
+
 	"github.com/go-resty/resty/v2"
 	"github.com/gorilla/websocket"
 )
@@ -13,6 +15,7 @@ type Client struct {
 	socketAddress   string // Socket Address
 	read            chan []byte
 	httpClient      *resty.Client
+	pingpongTimer   *time.Ticker
 
 	handshake [][]byte
 
