@@ -9,8 +9,9 @@ import (
 )
 
 const (
-	dataUrl  = "https://live.afreecatv.com/afreeca/player_live_api.php?bj_id=%s"
-	loginUrl = "https://login.afreecatv.com/app/LoginAction.php"
+	dataUrl    = "https://live.afreecatv.com/afreeca/player_live_api.php?bj_id=%s"
+	loginUrl   = "https://login.afreecatv.com/app/LoginAction.php"
+	user_agent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:122.0) Gecko/20100101 Firefox/122.0"
 )
 
 func (c *Client) setSocketData() error {
@@ -52,7 +53,7 @@ func (c *Client) login() error {
 			"szUid":      c.Token.Identifier.ID,
 			"szPassword": c.Token.Identifier.Password,
 		}).
-		SetHeader("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:122.0) Gecko/20100101 Firefox/122.0").
+		SetHeader("User-Agent", user_agent).
 		Post(loginUrl)
 	if err != nil {
 		return err
