@@ -51,11 +51,11 @@ func main() {
 ```
 
 ### Token
-- `BJID` (필수)
-  - 자동으로 `socketAddress` 및 `chatRoom`을 가져오기 위한 BJ 아이디입니다.
-- `Flag` (필수)
-  - 채팅 채널 연결에 필요한 유저 플래그 값
-  - example: `524304`
+- `BJID` **(필수)**
+  - 원하는 채팅방에 입장하기 위해 반드시 필요한 BJ 아이디입니다.
+- `Flag`
+  - 채팅 채널 연결할 때 사용되는 유저 플래그 값
+  - example: `524304`, `16`
 - `Identifier`
   - 채팅 채널 연결을 할 때 로그인 데이터
   - `Identifier.ID` 와 `Identifier.Password`의 값이 있을 경우 자동으로 로그인을 진행합니다.
@@ -63,7 +63,7 @@ func main() {
 
 ### Callback
 - `OnError(error)`
-  - 에러가 발생할 경우 에러를 반환합니다.
+  - 채팅 데이터를 읽는 중 에러가 발생할 경우 에러를 반환합니다.
 - `OnConnect(bool)`
   - 채널 입장 Handshake가 성공하면 `true`를 반환합니다.
 - `OnRawMessage(string)`
@@ -83,6 +83,8 @@ func main() {
   - example: `"{BJ NAME}님의 방송이 별별랭킹의 '웃음이 끊이지 않는 방송' 1위에 등극!"`
 - `OnMisson(Misson)`
   - 도전미션 별풍선 메시지가 있을 때마다 `Misson` 구조체를 반환합니다.
+- `OnLogin(bool)`
+  - 로그인 과정에서 성공/실패 여부를 반환합니다.
 
 ### 예제
 - [Warudo](https://warudo.app)

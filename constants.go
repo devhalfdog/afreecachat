@@ -7,7 +7,7 @@ const (
 	SVC_JOINCH                = 2 /* 채널 입장 핸드쉐이크 */
 	SVC_QUITCH                = 3 /* 강제 퇴장 */
 	SVC_CHUSER                = 4 /* 입장/퇴장 */
-	SVC_CHATMESG              = 5
+	SVC_CHATMESG              = 5 /* 채팅 메시지 */
 	SVC_SETCHNAME             = 6
 	SVC_SETBJSTAT             = 7
 	SVC_SETDUMB               = 8 /* 채금 */
@@ -23,9 +23,9 @@ const (
 	SVC_SENDBALLOON           = 18 /* 별풍선 */
 	SVC_ICEMODE               = 19 /* 얼음 */
 	SVC_SENDFANLETRTRER       = 20
-	SVC_ICEMODE_EX            = 21
+	SVC_ICEMODE_EX            = 21 /* 얼음 */ // log상 21, 19 순서임.
 	SVC_GET_ICEMODE_RELAY     = 22 /* 사용하지 않음 */
-	SVC_SLOWMODE              = 23
+	SVC_SLOWMODE              = 23 /* 슬로우 모드 */
 	SVC_RELOADBURNLEVEL       = 24 /* 사용하지 않음 */
 	SVC_BLINDKICK             = 25 /* 사용하지 않음 */
 	SVC_MANAGERCHAT           = 26 /* 매니저 채팅, 읽을 수 있는 권리는 매니저 flag 이상만 */
@@ -47,7 +47,7 @@ const (
 	SVC_UPDATETICKET          = 42 /* 사용하지 않음 */
 	SVC_NOTIGAMERANKER        = 43 /* 사용하지 않음 */
 	SVC_STARCOIN              = 44
-	SVC_SENDQUICKVIEW         = 45
+	SVC_SENDQUICKVIEW         = 45 /* 퀵 뷰 선물 */
 	SVC_ITEMSTATUS            = 46 /* 사용하지 않음 */
 	SVC_ITEMUSING             = 47
 	SVC_USEQUICKVIEW          = 48
@@ -91,6 +91,6 @@ const (
 	SVC_LIVE_CAPTION          = 122
 	SVC_MISSION_SETTLE        = 125
 	SVC_SET_ADMIN_FLAG        = 126
-	SVC_CHUSER_EXTEND         = 127
+	SVC_CHUSER_EXTEND         = 127 /* 구독자 리스트 */
 	SVC_ADMIN_CHUSER_EXTEND   = 128
 )

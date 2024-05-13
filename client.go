@@ -4,12 +4,12 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
-	"net/http/cookiejar"
 	"reflect"
 	"strings"
 	"sync"
 	"time"
 
+	"github.com/go-resty/resty/v2"
 	"github.com/gorilla/websocket"
 )
 
@@ -22,21 +22,16 @@ func NewClient(token Token) (*Client, error) {
 		return &Client{}, errors.New("need bj id value")
 	}
 
-	// 로그인을 위한 쿠키 저장소 초기화
-	jar, err := cookiejar.New(&cookiejar.Options{})
-	if err != nil {
-		return nil, err
-	}
+	// resty client 생성
+	httpClient := resty.New()
+	httpClient.SetTimeout(time.Duration(2 * time.Second))
 
 	return &Client{
 		Token:           token,
 		read:            make(chan []byte, 1024),
 		handshake:       make([][]byte, 2),
 		channelPassword: "",
-		httpClient: &http.Client{
-			Jar:     jar,
-			Timeout: 2 * time.Second,
-		},
+		httpClient:      httpClient,
 	}, nil
 }
 
@@ -52,7 +47,15 @@ func (c *Client) Connect(password ...string) error {
 	if c.Token.Identifier.ID != "" && c.Token.Identifier.Password != "" {
 		err := c.login()
 		if err != nil {
+			if c.onError != nil {
+				c.onLogin(false)
+			}
+
 			return err
+		}
+
+		if c.onLogin != nil {
+			c.onLogin(true)
 		}
 	}
 
@@ -89,7 +92,6 @@ func (c *Client) executeHandshake(svc int) error {
 		if err != nil {
 			return err
 		}
-
 	}
 
 	// 핸드쉐이크 수행
@@ -190,7 +192,6 @@ func (c *Client) reader(wg *sync.WaitGroup) {
 func (c *Client) startParser() error {
 	for msg := range c.read {
 		if strings.HasPrefix(string(msg), "error: ") {
-			// wg.Done()
 			return errors.New(string(msg))
 		}
 
@@ -205,7 +206,14 @@ func (c *Client) startParser() error {
 
 		switch svc {
 		case SVC_LOGIN: // Login, need JOIN handshake
-			c.executeHandshake(SVC_JOINCH)
+			// 로그인 단계에서 실패할 경우엔 에러를 반환한다.
+			err := c.executeHandshake(SVC_JOINCH)
+			if err != nil {
+				if c.onError != nil {
+					c.onError(err)
+				}
+				return err
+			}
 		case SVC_JOINCH: // 채널 입장
 			if c.onJoinChannel != nil {
 				if b := c.parseJoinChannel(msg); b {
@@ -283,7 +291,7 @@ func (c *Client) startParser() error {
 // 메시지를 보낼 때 실패한 경우 에러를 반환한다.
 func (c *Client) SendChatMessage(message string) error {
 	if c.Token.pdBoxTicket == "" {
-		return errors.New("cannot non-member send message. need PdBoxTicket token")
+		return errors.New("cannot non-member send message")
 	}
 
 	var tBuf []string
@@ -299,12 +307,22 @@ func (c *Client) SendChatMessage(message string) error {
 // 전송한다.
 func (c *Client) pingpong() {
 	t := time.NewTicker(1 * time.Minute)
+	// defer t.Stop()
+
 	go func() {
 		for range t.C {
 			bodyBuf := makeBuffer([]string{"\f"})
 			headerbuf := makeHeader(SVC_KEEPALIVE, len(bodyBuf), 0)
 			p := append(headerbuf, bodyBuf...)
 			c.socket.WriteMessage(websocket.BinaryMessage, p)
+			// if err != nil {
+			// 	// PING 메시지를 보낼 때 에러가 발생할 경우
+			// 	// 에러를 반환한다.
+			// 	if c.onError != nil {
+			// 		c.onError(err)
+			// 	}
+			// 	return
+			// }
 		}
 	}()
 }
@@ -333,9 +351,10 @@ func (c *Client) createWebsocket() error {
 // setLoginHandshake 메서드는 채팅 서버 연결에
 // 필요한 Login Handshake 데이터를 준비한다.
 func (c *Client) setLoginHandshke() error {
-	if c.Token.Flag == "" {
-		return errors.New("need user flag value")
-	}
+	// 필요하지 않은 것 같음.
+	// if c.Token.Flag == "" {
+	// 	return errors.New("need user flag value")
+	// }
 
 	var packet []string
 	packet = append(packet, "\f", c.Token.pdBoxTicket, "\f", "\f", c.Token.Flag, "\f")

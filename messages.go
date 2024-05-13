@@ -77,12 +77,11 @@ func (c *Client) parseBalloon(message []byte) (Balloon, error) {
 		return Balloon{}, err
 	}
 
-	user := User{
-		ID:   msg[2],
-		Name: msg[3],
-	}
 	balloon := Balloon{
-		User:  user,
+		User: User{
+			ID:   msg[2],
+			Name: msg[3],
+		},
 		Count: balloonCount,
 	}
 
@@ -103,13 +102,11 @@ func (c *Client) parseAdballoon(message []byte) (Adballoon, error) {
 		return Adballoon{}, err
 	}
 
-	user := User{
-		ID:   msg[3],
-		Name: msg[4],
-	}
-
 	adballoon := Adballoon{
-		User:  user,
+		User: User{
+			ID:   msg[3],
+			Name: msg[4],
+		},
 		Count: adballoonCount,
 	}
 

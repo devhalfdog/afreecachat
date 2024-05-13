@@ -4,6 +4,7 @@ package afreecachat
  * callbacks *
  *************/
 
+// OnError 메서드는 웹 소켓 통신 이후의 발생한 에러 데이터를 전달한다.
 func (c *Client) OnError(callback func(err error)) {
 	c.onError = callback
 }
@@ -55,4 +56,13 @@ func (c *Client) OnAdminNotice(callback func(message string)) {
 
 func (c *Client) OnMission(callback func(mission Mission)) {
 	c.onMission = callback
+}
+
+/*****************
+ * API callbacks *
+ *****************/
+
+// OnLogin 메서드는 로그인 성공/실패 데이터를 전달한다
+func (c *Client) OnLogin(callback func(isLoginSuccess bool)) {
+	c.onLogin = callback
 }

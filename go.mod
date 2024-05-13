@@ -10,7 +10,8 @@ require (
 )
 
 require (
+	github.com/go-resty/resty/v2 v2.12.0
 	github.com/joho/godotenv v1.5.1
 	github.com/tidwall/gjson v1.17.0
-	golang.org/x/net v0.17.0 // indirect
+	golang.org/x/net v0.22.0 // indirect
 )

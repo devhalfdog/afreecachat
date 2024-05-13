@@ -1,8 +1,7 @@
 package afreecachat
 
 import (
-	"net/http"
-
+	"github.com/go-resty/resty/v2"
 	"github.com/gorilla/websocket"
 )
 
@@ -13,14 +12,14 @@ type Client struct {
 	socket          *websocket.Conn
 	socketAddress   string // Socket Address
 	read            chan []byte
-	httpClient      *http.Client
+	httpClient      *resty.Client
 
 	handshake [][]byte
 
 	// callback
 	onError        func(err error)
-	onConnect      func(connect bool)
-	onJoinChannel  func(join bool)
+	onConnect      func(isConnect bool)
+	onJoinChannel  func(isJoin bool)
 	onRawMessage   func(message string)
 	onChatMessage  func(message ChatMessage)
 	onUserLists    func(userlist []UserList)
@@ -29,6 +28,9 @@ type Client struct {
 	onSubscription func(subscrption Subscription)
 	onAdminNotice  func(message string)
 	onMission      func(mission Mission)
+
+	// api callback
+	onLogin func(isLoginSuccess bool)
 }
 
 type Token struct {
@@ -101,9 +103,9 @@ type Flag1 struct {
 	QuickView      bool // 퀵뷰 유저
 	SptrSticker    bool // 스티커 서포터
 	Chromecast     bool // 크롬 캐스트
-	Follower       bool // 구독자
-	NotiVodBalloon bool // VOD 별풍 알림?
-	NotiTopFan     bool // 열혈 알림?
+	Subscriber     bool // 구독자
+	NotiVodBalloon bool // VOD 별풍 알림
+	NotiTopFan     bool // 열혈 알림
 }
 
 type Flag2 struct {

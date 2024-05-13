@@ -175,7 +175,7 @@ func getFlag1(flag int) Flag1 {
 		QuickView:      flag&(1<<19) != 0,
 		SptrSticker:    flag&(1<<20) != 0,
 		Chromecast:     flag&(1<<21) != 0,
-		Follower:       flag&(1<<28) != 0,
+		Subscriber:     flag&(1<<28) != 0,
 		NotiVodBalloon: flag&(1<<30) != 0,
 		NotiTopFan:     flag&(1<<31) != 0,
 	}
