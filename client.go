@@ -35,9 +35,10 @@ func NewClient(token Token) (*Client, error) {
 	}, nil
 }
 
-// Connect 메서드는 채팅 서버 연결에 필요한
+// MustConnect 메서드는 채팅 서버 연결에 필요한
 // 과정을 수행한다.
-func (c *Client) Connect(password ...string) error {
+// Panic이 발생하는 원인을 해결하기 전까지 Must prefix
+func (c *Client) MustConnect(password ...string) error {
 	// 패스워드가 있다면 필드에 값을 대입한다.
 	if len(password) > 0 {
 		c.channelPassword = password[0]
@@ -180,7 +181,7 @@ func (c *Client) reader(wg *sync.WaitGroup) {
 		_, msg, err := c.socket.ReadMessage()
 		if err != nil {
 			c.read <- []byte(fmt.Sprintf("error: %s", err.Error()))
-			return
+			continue
 		}
 
 		c.read <- msg
@@ -307,7 +308,7 @@ func (c *Client) SendChatMessage(message string) error {
 // 전송한다.
 func (c *Client) pingpong() {
 	t := time.NewTicker(1 * time.Minute)
-	// defer t.Stop()
+	defer t.Stop()
 
 	go func() {
 		for range t.C {
@@ -315,14 +316,6 @@ func (c *Client) pingpong() {
 			headerbuf := makeHeader(SVC_KEEPALIVE, len(bodyBuf), 0)
 			p := append(headerbuf, bodyBuf...)
 			c.socket.WriteMessage(websocket.BinaryMessage, p)
-			// if err != nil {
-			// 	// PING 메시지를 보낼 때 에러가 발생할 경우
-			// 	// 에러를 반환한다.
-			// 	if c.onError != nil {
-			// 		c.onError(err)
-			// 	}
-			// 	return
-			// }
 		}
 	}()
 }
@@ -351,11 +344,6 @@ func (c *Client) createWebsocket() error {
 // setLoginHandshake 메서드는 채팅 서버 연결에
 // 필요한 Login Handshake 데이터를 준비한다.
 func (c *Client) setLoginHandshke() error {
-	// 필요하지 않은 것 같음.
-	// if c.Token.Flag == "" {
-	// 	return errors.New("need user flag value")
-	// }
-
 	var packet []string
 	packet = append(packet, "\f", c.Token.pdBoxTicket, "\f", "\f", c.Token.Flag, "\f")
 
