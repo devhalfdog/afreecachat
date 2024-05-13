@@ -146,6 +146,7 @@ func (c *Client) processSocket() error {
 
 	// 아빠 안잔다.
 	c.pingpong()
+	defer c.pingpongTimer.Stop()
 
 	// 로그인 핸드쉐이크
 	// 이 때 에러가 발생하면 작업이 완료된다.
@@ -307,11 +308,10 @@ func (c *Client) SendChatMessage(message string) error {
 // pingpong 메서드는 매 1분마다 ping 데이터를
 // 전송한다.
 func (c *Client) pingpong() {
-	t := time.NewTicker(1 * time.Minute)
-	defer t.Stop()
+	c.pingpongTimer = time.NewTicker(1 * time.Minute)
 
 	go func() {
-		for range t.C {
+		for range c.pingpongTimer.C {
 			bodyBuf := makeBuffer([]string{"\f"})
 			headerbuf := makeHeader(SVC_KEEPALIVE, len(bodyBuf), 0)
 			p := append(headerbuf, bodyBuf...)
