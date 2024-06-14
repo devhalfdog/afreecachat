@@ -1,6 +1,7 @@
 package afreecachat
 
 import (
+	"crypto/tls"
 	"errors"
 	"fmt"
 	"net/http"
@@ -331,6 +332,9 @@ func (c *Client) createWebsocket() error {
 	// 웹소켓 설정
 	dialer := websocket.Dialer{
 		HandshakeTimeout: 5 * time.Second, // 설정하지 않으면 너무 오래 대기함.
+		TLSClientConfig: &tls.Config{
+			InsecureSkipVerify: true,
+		},
 	}
 	header := http.Header{}
 	header.Set("Sec-WebSocket-Protocol", "chat")
