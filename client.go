@@ -293,7 +293,7 @@ func (c *Client) startParser() error {
 // SendChatMessage 메서드는 채팅 채널에 채팅 데이터를 전송한다.
 // 메시지를 보낼 때 실패한 경우 에러를 반환한다.
 func (c *Client) SendChatMessage(message string) error {
-	if c.Token.pdBoxTicket == "" {
+	if c.Token.authTicket == "" {
 		return errors.New("cannot non-member send message")
 	}
 
@@ -349,7 +349,7 @@ func (c *Client) createWebsocket() error {
 // 필요한 Login Handshake 데이터를 준비한다.
 func (c *Client) setLoginHandshke() error {
 	var packet []string
-	packet = append(packet, "\f", c.Token.pdBoxTicket, "\f", "\f", c.Token.Flag, "\f")
+	packet = append(packet, "\f", c.Token.authTicket, "\f", "\f", c.Token.Flag, "\f")
 
 	return c.setHandshakeData(1, packet)
 }

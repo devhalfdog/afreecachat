@@ -41,9 +41,9 @@ type Token struct {
 	Identifier Identifier
 	Flag       string
 
-	pdBoxTicket string
-	fanTicket   string
-	chatRoom    string
+	authTicket string
+	fanTicket  string
+	chatRoom   string
 }
 
 type Identifier struct {
