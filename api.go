@@ -16,15 +16,15 @@ const (
 
 func (c *Client) setSocketData() error {
 	data := url.Values{}
-	data.Set("bid", c.Token.BJID)
+	data.Set("bid", c.Token.StreamerID)
 	data.Set("player_type", "html5")
 
 	resp, err := c.httpClient.R().
 		SetFormData(map[string]string{
-			"bid":         c.Token.BJID,
+			"bid":         c.Token.StreamerID,
 			"player_type": "html5",
 		}).
-		Post(fmt.Sprintf(dataUrl, c.Token.BJID))
+		Post(fmt.Sprintf(dataUrl, c.Token.StreamerID))
 	if err != nil {
 		return err
 	}

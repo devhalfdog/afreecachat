@@ -37,7 +37,7 @@ type Client struct {
 }
 
 type Token struct {
-	BJID       string
+	StreamerID string
 	Identifier Identifier
 	Flag       string
 

@@ -19,7 +19,7 @@ import (
 func NewClient(token Token) (*Client, error) {
 	// BJ ID가 있어야 SocketAddress 및 ChatRoom 설정하므로
 	// 필수 토큰이다. 없을 경우 에러를 반환한다.
-	if token.BJID == "" {
+	if token.StreamerID == "" {
 		return &Client{}, errors.New("need bj id value")
 	}
 
