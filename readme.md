@@ -12,17 +12,19 @@
 
 `go get -u https://github.com/devhalfdog/afreecachat`
 
+**예제**
 ```go
 ...
 
 func main() {
     token := afreecachat.Token{
-        BJID: {BJ ID},
+        StreamerID: {Streamer ID}, // 필수
+
+        // 선택사항
         Identifier: afreecachat.Identifier{
-          ID:       {ID},
-          Password: {PW},
+          ID:       {Your ID},
+          Password: {Your PW},
         }
-        Flag: {Flag},
     }
     client, err := afreecachat.NewClient(token)
     if err != nil {
@@ -43,7 +45,7 @@ func main() {
 
     // 채팅방 접속을 시도합니다.
     // 에러가 발생할 경우 panic()을 호출합니다.
-    err := client.Connect()
+    err := client.MustConnect()
     if err != nil {
         panic(err)
     }
@@ -51,7 +53,7 @@ func main() {
 ```
 
 ### Token
-- `BJID` **(필수)**
+- `StreamerID` **(필수)**
   - 원하는 채팅방에 입장하기 위해 반드시 필요한 BJ 아이디입니다.
 - `Flag`
   - 채팅 채널 연결할 때 사용되는 유저 플래그 값
@@ -100,11 +102,10 @@ func main() {
   - [ ] 스티커를 받았을 때 콜백
   - [ ] 현재 채팅방에 있는 구독자 가져오기
   - [ ] 테스트 파일 작성
+  - [ ] 코드 최적화
   - [ ] 에러 처리
     - [ ] 조금 더 자세한 에러 메시지 반환
-    - [ ] `"\x1b\t000100005807\f시스템 에러가 발생 했습니다. (중복 세션)\f"`\
+    - [ ] `"\x1b\t000100005807\f시스템 에러가 발생 했습니다. (중복 세션)\f"`
 
-- [ ] 코드 최적화
-
-## 레퍼런스
+## 참고하면 좋은 라이브러리
 - [https://github.com/wakscord/afreeca](https://github.com/wakscord/afreeca)
