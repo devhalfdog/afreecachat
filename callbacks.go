@@ -1,4 +1,4 @@
-package afreecachat
+package soopchat
 
 /*************
  * callbacks *

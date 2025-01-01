@@ -1,7 +1,7 @@
-# AfreecaTV chat, Go library
+# Soop chat, Go library
 공부용으로 제작하였습니다.
 
-[아프리카TV](https://afreecatv.com) 채팅을 읽을 수 있는 [Go](https://go.dev) 라이브러리입니다.
+[숲](https://sooplive.co.kr) 채팅을 읽을 수 있는 [Go](https://go.dev) 라이브러리입니다.
 
 공식 API가 없기 때문에 임시로 제작하였으므로 언제든지 막히거나 수정될 가능성이 매우 높습니다.
 
@@ -10,23 +10,23 @@
 ## 사용 방법
 **라이브러리 가져오기**
 
-`go get -u https://github.com/devhalfdog/afreecachat`
+`go get -u https://github.com/devhalfdog/soopchat`
 
 **예제**
 ```go
 ...
 
 func main() {
-    token := afreecachat.Token{
+    token := soopchat.Token{
         StreamerID: {Streamer ID}, // 필수
 
         // 선택사항
-        Identifier: afreecachat.Identifier{
+        Identifier: soopchat.Identifier{
           ID:       {Your ID},
           Password: {Your PW},
         }
     }
-    client, err := afreecachat.NewClient(token)
+    client, err := soopchat.NewClient(token)
     if err != nil {
         // client 생성 중 에러가 발생할 경우
         // panic() 을 호출합니다.
@@ -38,7 +38,7 @@ func main() {
         fmt.Println(err)
     })
 
-    client.OnChatMessage(func(message afreecachat.ChatMessage) {
+    client.OnChatMessage(func(message soopchat.ChatMessage) {
         // 채팅 메시지가 있을 경우 ID, NAME, MESSAGE를 출력합니다.
         fmt.Printf("ID: %s, NAME: %s, MESSAGE: %s\n", message.User.ID, message.User.Name, message.Message)
     })

@@ -1,4 +1,4 @@
-package afreecachat
+package soopchat
 
 // Reference : https://github.com/wakscord/afreeca
 const (
